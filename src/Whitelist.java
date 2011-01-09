@@ -32,6 +32,8 @@ public class Whitelist {
 			}
 			
 			internalList = data.split(",");
+			
+			Kikkit.MinecraftLog.info("Whitelist Loaded");
 		}
 		catch (Exception f){
 			Kikkit.MinecraftLog.warning("Could not load the whitelist file.");
