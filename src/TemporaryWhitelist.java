@@ -2,13 +2,16 @@ import java.util.*;
 
 @SuppressWarnings("deprecation")
 public class TemporaryWhitelist extends Whitelist {
-	private class WhiteoutPeriod {
+	public class WhiteoutPeriod {
 		public Date Start;
 		public Date End;
 		
 		public WhiteoutPeriod(Date start, Date end){
 			Start = start;
+			Start.setSeconds(0);
+			
 			End = end;
+			End.setSeconds(59);
 		}
 		
 		public boolean isInPeriod(Date dateToCheck){
@@ -30,15 +33,13 @@ public class TemporaryWhitelist extends Whitelist {
 			
 			int returnValue = left.compareTo(right);
 			
-			//Kikkit.MinecraftLog.info("    " + d1 + " to " + d2 + " = " + returnValue);
-			
-			return returnValue; //left.compareTo(right);
+			return returnValue;
 		}
 	}
 	
 	private ArrayList<WhiteoutPeriod> periods = new ArrayList<WhiteoutPeriod>();
 	
-	//private Date wlStart, wlEnd;
+	private WhiteoutPeriod currentPeriod = null;
 	private boolean isEnabled;
 	
 	public TemporaryWhitelist(String filename, GenericConfig config, String prefix){
@@ -46,24 +47,10 @@ public class TemporaryWhitelist extends Whitelist {
 		
 		if(!config.hasKey(prefix.concat("whiteouts"))){
 			isEnabled = false;
+			setIsOverriden(true);
 			Kikkit.MinecraftLog.info("Couldn't find key: " + prefix.concat("whiteouts"));
 		}
 		else{
-			/*
-			String[] start = config.getValue(prefix.concat("start")).split(":");
-			String[] end = config.getValue(prefix.concat("end")).split(":");
-			
-			wlStart = new Date();
-			wlStart.setHours(Integer.parseInt(start[0]));
-			wlStart.setMinutes(Integer.parseInt(start[1]));
-			
-			wlEnd = new Date();
-			wlEnd.setHours(Integer.parseInt(end[0]));
-			wlEnd.setMinutes(Integer.parseInt(end[1]));
-			
-			Kikkit.MinecraftLog.info("Whitelist will run from " + wlStart + " to " + wlEnd);*/
-			//isEnabled = true;
-			
 			String[] data = config.getValue(prefix.concat("whiteouts")).split(",");
 			
 			for(String periodString : data){
@@ -77,7 +64,7 @@ public class TemporaryWhitelist extends Whitelist {
 					
 					periods.add(p);
 					
-					Kikkit.MinecraftLog.info("Added period from " + p.Start + " to " + p.End + ".");
+					Kikkit.MinecraftLog.info("[" + prefix + "] Added period from " + p.Start + " to " + p.End + ".");
 				}
 			}
 		}
@@ -111,56 +98,19 @@ public class TemporaryWhitelist extends Whitelist {
 		Date currentDate = new Date();
 		
 		boolean enabled = false;
+		currentPeriod = null;
 		for(WhiteoutPeriod p : periods){
 			
 			if(p.isInPeriod(currentDate)){
+				currentPeriod = p;
 				enabled = true;
 				break;
 			}
-			
-			//Kikkit.MinecraftLog.info("Validating data against " + p.Start + " to " + p.End + " [" + enabled + "]");
 		}
 		
 		isEnabled = enabled;
-		/*Date start = wlStart;
-		Date end = wlEnd;
-		*/
-		/*Kikkit.MinecraftLog.info("compare(currentDate, start): " + compare(currentDate, start));
-		Kikkit.MinecraftLog.info("compare(currentDate, end)  : " + compare(currentDate, end));*/
-		
-		//isEnabled = compare(currentDate, start) >= 0 && -compare(currentDate, end) < 0;
 	}
 	
-	/*
-	public Date getStart(){ return wlStart; }
-	public Date getEnd(){ return wlEnd; }*/
 	public boolean getIsEnabled(){ return isEnabled; }
-	
-	/*
-	private int compare(Date d1, Date d2){
-		int h1 = d1.getHours();
-		int h2 = d2.getHours();
-		
-		int m1 = d1.getMinutes();
-		int m2 = d2.getMinutes();
-		
-		if(h1 < h2) return -1;
-		if(h1 > h2) return 1;
-		
-		if(m1 < m2) return -1;
-		if(m1 > m2) return 1;
-		
-		return 0;
-		/*Date left = (Date)d1.clone();
-		left.setYear(2010);
-		left.setMonth(1);
-		left.setDate(0);
-		
-		Date right = (Date)d2.clone();
-		right.setYear(2010);
-		right.setMonth(1);
-		right.setDate(0);
-		
-		return left.compareTo(right);
-	}*/
+	public WhiteoutPeriod getCurrentPeriod() { return currentPeriod; }
 }

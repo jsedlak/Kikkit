@@ -5,74 +5,17 @@ public class KikkitListener extends PluginListener{
 		this.plugin = plugin;
 	}
 	
-	public void onArmSwing(Player player) {
-        
-    }
-	
-	public boolean onBlockPhysics(Block block, boolean placed) {
-		//plugin.broadcast(block.blockType.name() + " physics, placed: " + placed);
-		return false;
-    }
-	
-	public boolean onFlow(Block blockFrom, Block blockTo) {
-		//plugin.broadcast("flow from " + blockFrom.blockType.name() + " to " + blockTo.blockType.name());
-        return false;
-    }
-	
-	public boolean onBlockCreated(Player player, Block block) {
-		//plugin.broadcast(Colors.Red + player.getName() + " has created " + block.blockType.name() + ".");
-        return false;
-    }
-	
-	public void onBlockRightClicked(Player player, Block blockClicked, Item item) {
-		//plugin.broadcast(Colors.Red + player.getName() + " has right clicked " + blockClicked.blockType.name() + " with item " + item.itemType.name() + ".");
+	public boolean onItemUse(Player player, Block blockPlaced, Block blockCLicked, Item item) {
+		//Kikkit.MinecraftLog.info(player.getName() + " has used " + item.itemType.name() + " with Id " + item.getItemId() + ".");
 		
-		if(item.itemType == Item.Type.LavaBucket){
-			item.setType(Item.Type.Torch);
-		}
-    }
-	
-	public boolean onComplexBlockChange(Player player, ComplexBlock block) {
-		//plugin.broadcast(block.getBlock().blockType.name() + " was changed.");
-        return false;
-    }
-	
-	public boolean onSendComplexBlock(Player player, ComplexBlock block) {
-		//plugin.broadcast(block.getBlock().blockType.name() + " was sent.");
-        return false;
-    }
-	
-	public boolean onBlockPlace(Player player, Block blockPlaced, Block blockClicked, Item itemInHand) {
-		//plugin.broadcast(Colors.Gold + player.getName() + " has placed " + blockPlaced.blockType.name() + " on " + blockClicked.blockType.name() + " using item " + itemInHand.itemType.name());
-        if(itemInHand.itemType == Item.Type.LavaBucket || blockPlaced.blockType == Block.Type.Lava){
-        	return onIgnite(blockPlaced, player);
-        }
-        
-        return false;
-    }
-	
-	public boolean onItemUse(Player player, Item item) {
-		//plugin.broadcast(Colors.Gold + player.getName() + " has used " + item.itemType.name() + ".");
-		
-		if(item.itemType == Item.Type.LavaBucket){
+		if(item.getItemId() == ItemConstants.LavaBucketId){
 			if(!plugin.canPlayerIgnite(player)){
 				plugin.broadcast(Colors.Red + player.getName() + " has tried using the lava bucket, but has been blocked!");
+				Kikkit.MinecraftLog.info(player.getName() + " has tried to use " + item.itemType.name() + " with Id " + item.getItemId() + ".");
 				return true;
 			}
 		}
-        return false;
-    }
-	
-	public boolean onItemPickUp(Player player, Item item) {
-		//plugin.broadcast(Colors.Gold + player.getName() + " has picked up " + item.itemType.name() + ".");
-		if(item.itemType == Item.Type.LavaBucket && !plugin.canPlayerIgnite(player)){
-			//plugin.broadcast(Colors.Red + player.getName() + " has tried to pick up a lava bucket but has been blocked.");
-			//return true;
-		}
-		return false;
-	}
-	
-	public boolean onEquipmentChange(Player player) {
+		
         return false;
     }
 	
@@ -102,27 +45,62 @@ public class KikkitListener extends PluginListener{
 		if(split[0].equalsIgnoreCase("/fire")){
 			if(!player.isAdmin()) return false;
 			
-			plugin.setFireListOverride(!plugin.getFireListOverride());
-			
-			if(plugin.getFireListOverride()) player.sendMessage(Colors.Red + "Firelist override is ON. Players can use fire.");
-			else player.sendMessage(Colors.Red + "Firelist override is OFF. Players can't use fire.");
+			Whitelist fireList = plugin.getFireWhitelist();
+
+			if(split.length == 1){
+				fireList.setIsOverriden(!fireList.getIsOverriden());
+				
+				if(fireList.getIsOverriden()) player.sendMessage(Colors.Red + "Firelist override is ON. Players can use fire.");
+				else player.sendMessage(Colors.Red + "Firelist override is OFF. Players can't use fire.");
+			}
+			else if(split.length == 3){
+				if(split[1].equalsIgnoreCase("add")){
+					fireList.add(split[2]);
+					player.sendMessage(Colors.Red + split[2] + " has been added to the Fire/Lava whitelist.");
+				}
+				else if(split[1].equalsIgnoreCase("remove")){
+					fireList.remove(split[2]);
+					player.sendMessage(Colors.Red + split[2] + " has been removed from the Fire/Lava whitelist.");
+				}
+			}
 			
 			return true;
 		}
 		
-		if(split[0].equalsIgnoreCase("/wlon") || split[0].equalsIgnoreCase("/wloff")){
+		if(split[0].equalsIgnoreCase("/tempwl")){
 			if(!player.isAdmin()){
 				//player.sendMessage(Colors.Red + "Unknown command.");
 				return false;
 			}
 			
+			TemporaryWhitelist tempList = plugin.getTemporaryWhitelist();
+			
+			if(split.length == 1){
+				tempList.setIsOverriden(!tempList.getIsOverriden());
+				
+				if(tempList.getIsOverriden()) player.sendMessage(Colors.Red + "Whitelist override is now ON. (Players can join freely)");
+				else player.sendMessage(Colors.Red + "Whitelist override is now OFF.");
+			}
+			else if(split.length == 3){
+				if(split[1].equalsIgnoreCase("add")){
+					tempList.add(split[2]);
+					player.sendMessage(Colors.Red + split[2] + " has been added to the Temp whitelist.");
+				}
+				else if(split[1].equalsIgnoreCase("remove")){
+					tempList.remove(split[2]);
+					player.sendMessage(Colors.Red + split[2] + " has been removed from the Temp whitelist.");
+				}
+			}
+			/*
+			
+			
 			boolean wloff = split[0].equalsIgnoreCase("/wloff");
 			
-			plugin.setWhitelistOverride(wloff);
+			tempList.setIsOverriden(wloff);
 			
 			if(wloff) player.sendMessage(Colors.Red + "Whitelist override is now ON. (Whitelist is disabled, players can join freely)");
 			else player.sendMessage(Colors.Red + "Whitelist override is now OFF.");
-			
+			*/
 			return true;
 		}
 		
@@ -134,41 +112,25 @@ public class KikkitListener extends PluginListener{
 		if(!plugin.getIsEnabled() || player == null) return;
 		
 		// If we are in a whiteout, check if the player can login
-		if(plugin.getIsWhitelistEnabled()){
+		if(plugin.getTemporaryWhitelist().getIsEnabled()){
 			// If the player can login, welcome him/her back and notify them that they are on the list.
 			if(plugin.canPlayerLogin(player)){
+				player.sendMessage(Colors.Gold + "[" + Kikkit.getPluginName() + "]");
 				player.sendMessage(Colors.Gold + "Welcome back, " + player.getName() + ".");
 				player.sendMessage(Colors.Gold + "We are currently in a whiteout, but you made the list!");
 			}
 			// Otherwise kick them.
 			else{
 				Kikkit.MinecraftLog.info(player.getName() + " has been kicked for not being on the temporary whitelist.");
-				player.kick("You were kicked because you are not on the whitelist,\ncheck back in a few hours.");
+				player.kick("You were kicked because you are not on the whitelist, check back in a few hours.");
 				plugin.broadcast(Colors.Red + player.getName() + " was kicked for not being on the whitelist.");
 			}
 		}
 		// If we are not in a whiteout, notify them of the rules.
 		else{
+			player.sendMessage(Colors.Gold + "[" + Kikkit.getPluginName() + "]");
 			player.sendMessage(Colors.Gold + "Please respect others' property and no griefing.");
 			player.sendMessage(Colors.Gold + "Fire and lava are in a whiteout.");
 		}
-		
-		/*
-		if(plugin.canLogin(player)){
-			player.sendMessage(Colors.Gold + "Welcome back, " + player.getName() + ". You have been whitelisted.");
-		}
-		else{
-			if(plugin.getIsWhitelistEnabled() && plugin.canLogin(player)){
-				player.sendMessage(Colors.Yellow + "Welcome to our server. Please respect others' property and no griefing.");
-			}
-			else{
-				//etc.getServer()
-				EnterMod.logger.info(player.getName() + " has been kicked for not being on the temporary whitelist.");
-				player.kick("You have been kicked because the server is currently using a whitelist that you are not on.");
-				return;
-			}
-		}*/
-		
-		//plugin.broadcast(Colors.Green + player.getName() + " has joined the server!");
 	}
 }

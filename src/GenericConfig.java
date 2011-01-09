@@ -26,6 +26,8 @@ public class GenericConfig {
 	
 	public void load(String filename){
 		try{
+			internalList.clear();
+			
 			FileInputStream inputStream = new FileInputStream(filename);
 			InputStreamReader reader = new InputStreamReader(inputStream, "UTF-8");
 			

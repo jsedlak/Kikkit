@@ -1,14 +1,18 @@
 import java.io.*;
-import java.util.Scanner;
+import java.util.*;
 
 public class Whitelist {
-	private String[] internalList;
+	private ArrayList<String> internalList = new ArrayList<String>();
+	private boolean isOverriden;
+	private String internalFilename;
 	
 	public Whitelist(String filename){
 		load(filename);
 	}
 	
 	public boolean isOnList(String playerName){
+		if(isOverriden) return true;
+		
 		for(String str : internalList){
 			if(str.equalsIgnoreCase(playerName)) return true;
 		}
@@ -17,27 +21,79 @@ public class Whitelist {
 	}
 	
 	public void load(String filename){
-		try{
+		try{			
+			internalFilename = filename;
+			
 			FileInputStream inputStream = new FileInputStream(filename);
 			InputStreamReader reader = new InputStreamReader(inputStream, "UTF-8");
 			
 			Scanner scanner = new Scanner(reader);
 		
 			String data = "";
+			internalList.clear();
 			while(scanner.hasNextLine()){
-				data = data.concat(scanner.nextLine());
+				data = scanner.nextLine();
 				
-				if(scanner.hasNextLine())
-					data = data.concat(",");
+				internalList.add(data);
 			}
 			
-			internalList = data.split(",");
-			
-			Kikkit.MinecraftLog.info("Whitelist Loaded");
+			Kikkit.MinecraftLog.info("Whitelist Loaded from " + filename);
 		}
 		catch (Exception f){
-			Kikkit.MinecraftLog.warning("Could not load the whitelist file.");
+			Kikkit.MinecraftLog.warning("Could not load the whitelist file: " + filename);
 		}
 		finally{}
+	}
+	
+	public void save(){
+		FileWriter outputFile;
+		
+		try {		
+			outputFile = new FileWriter(internalFilename, false);
+			
+			//PrintWriter out = new PrintWriter(outputFile);
+			
+			//for(String line : internalList){
+			for(int i = 0; i < internalList.size(); i++){
+				//out.println(line);
+				String person = internalList.get(i);
+				
+				outputFile.write(person + "\n");
+			}
+			
+			outputFile.close();
+		}
+		catch (IOException e) {
+			Kikkit.MinecraftLog.info(e.getMessage());
+		}	
+	}
+	
+	public void add(String user){
+		for(String str : internalList){
+			if(str.equalsIgnoreCase(user)) return;
+		}
+		
+		internalList.add(user);
+		
+		save();
+	}
+	
+	public void remove(String user){
+		for(int i = internalList.size() - 1; i >= 0; i--){
+			if(internalList.get(i).equalsIgnoreCase(user)){
+				internalList.remove(i);
+				break;
+			}
+		}
+		
+		save();
+	}
+	
+	public boolean getIsOverriden(){
+		return isOverriden;
+	}
+	
+	public void setIsOverriden(boolean value){
+		isOverriden = value;
 	}
 }
