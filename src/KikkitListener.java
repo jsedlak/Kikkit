@@ -111,7 +111,7 @@ public class KikkitListener extends PluginListener{
 		}
 		
 		if(split[0].equalsIgnoreCase("/secret")){
-			if(!player.isAdmin() || !player.isInGroup(Groups.Moderator) || !player.isInGroup(Groups.Vip)){
+			if(!player.isAdmin() && !player.isInGroup(Groups.Moderator) && !player.isInGroup(Groups.Vip)){
 				return false;
 			}
 			
