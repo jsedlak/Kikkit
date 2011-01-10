@@ -89,6 +89,14 @@ public class Whitelist {
 		save();
 	}
 	
+	public boolean has(String user){
+		for(int i = internalList.size() - 1; i >= 0; i--){
+			if(internalList.get(i).equalsIgnoreCase(user)) return true;
+		}
+		
+		return false;
+	}
+	
 	public boolean getIsOverriden(){
 		return isOverriden;
 	}

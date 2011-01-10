@@ -16,6 +16,13 @@ public class KikkitListener extends PluginListener{
 				return true;
 			}
 		}
+		else if(item.getItemId() == ItemConstants.TntId){
+			if(!plugin.canPlayerIgnite(player)){
+				plugin.broadcast(Colors.Red + player.getName() + " has tried placing TNT, but has been blocked!");
+				Kikkit.MinecraftLog.info(player.getName() + " has tried to use " + item.itemType.name() + " with Id " + item.getItemId() + ".");
+				return true;
+			}
+		}
 		
         return false;
     }
@@ -63,6 +70,10 @@ public class KikkitListener extends PluginListener{
 					fireList.remove(split[2]);
 					player.sendMessage(Colors.Red + split[2] + " has been removed from the Fire/Lava whitelist.");
 				}
+				else if(split[1].equalsIgnoreCase("check")){
+					if(fireList.has(split[2])) player.sendMessage(Colors.Red + split[2] + " is on the Fire/Lava whitelist.");
+					else player.sendMessage(Colors.Red + split[2] + " is NOT on the Fire/Lava whitelist.");
+				}
 			}
 			
 			return true;
@@ -90,6 +101,10 @@ public class KikkitListener extends PluginListener{
 				else if(split[1].equalsIgnoreCase("remove")){
 					tempList.remove(split[2]);
 					player.sendMessage(Colors.Red + split[2] + " has been removed from the Temp whitelist.");
+				}
+				else if(split[1].equalsIgnoreCase("check")){
+					if(tempList.has(split[2])) player.sendMessage(Colors.Red + split[2] + " is on the Temp whitelist.");
+					else player.sendMessage(Colors.Red + split[2] + " is NOT on the Temp whitelist.");
 				}
 			}
 			

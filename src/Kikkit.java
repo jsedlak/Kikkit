@@ -13,7 +13,7 @@ import java.util.Date;
 public class Kikkit extends Plugin {
 	public static Logger MinecraftLog = null;				// Used to log stuff
 	public static final String PublicName = "Kikkit";		// Our mod's name
-	public static final String Version = "1.2";				// The version!
+	public static final String Version = "1.2.2";			// The version!
 	public static final long UPDATE_INTERVAL = 30000;		// How often the plugin should update itself
 	
 	public static String getPluginName(){
