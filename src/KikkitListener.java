@@ -1,3 +1,4 @@
+
 public class KikkitListener extends PluginListener{
 	private Kikkit plugin;
 	
@@ -91,16 +92,43 @@ public class KikkitListener extends PluginListener{
 					player.sendMessage(Colors.Red + split[2] + " has been removed from the Temp whitelist.");
 				}
 			}
-			/*
 			
+			return true;
+		}
+		
+		if(split[0].equalsIgnoreCase("/setsecret")){
+			if(!player.isAdmin() || !player.isInGroup(Groups.Moderator) || !player.isInGroup(Groups.Vip)){
+				return false;
+			}
 			
-			boolean wloff = split[0].equalsIgnoreCase("/wloff");
+			WarpList list = plugin.getSecretWarpList();
 			
-			tempList.setIsOverriden(wloff);
+			list.set(player.getName(), player.getX(), player.getY(), player.getZ());
 			
-			if(wloff) player.sendMessage(Colors.Red + "Whitelist override is now ON. (Whitelist is disabled, players can join freely)");
-			else player.sendMessage(Colors.Red + "Whitelist override is now OFF.");
-			*/
+			player.sendMessage(Colors.Red + "Secret warp has been set.");
+			
+			return true;
+		}
+		
+		if(split[0].equalsIgnoreCase("/secret")){
+			if(!player.isAdmin() || !player.isInGroup(Groups.Moderator) || !player.isInGroup(Groups.Vip)){
+				return false;
+			}
+			
+			WarpList list = plugin.getSecretWarpList();
+			
+			WarpList.WarpPoint wp = list.get(player.getName());
+			
+			if(wp != null){
+				player.setX(wp.X);
+				player.setY(wp.Y);
+				player.setZ(wp.Z);
+				
+				player.sendMessage(Colors.Red + "Secret Whoosh!");
+			}
+			else{
+				player.sendMessage(Colors.Red + "You must set a secret warp first with /setsecret");
+			}
 			return true;
 		}
 		
@@ -115,7 +143,7 @@ public class KikkitListener extends PluginListener{
 		if(plugin.getTemporaryWhitelist().getIsEnabled()){
 			// If the player can login, welcome him/her back and notify them that they are on the list.
 			if(plugin.canPlayerLogin(player)){
-				player.sendMessage(Colors.Gold + "[" + Kikkit.getPluginName() + "]");
+				player.sendMessage(Colors.Gold + "[" + Kikkit.getPluginName() + " by Kr1sc]");
 				player.sendMessage(Colors.Gold + "Welcome back, " + player.getName() + ".");
 				player.sendMessage(Colors.Gold + "We are currently in a whiteout, but you made the list!");
 			}
@@ -128,7 +156,7 @@ public class KikkitListener extends PluginListener{
 		}
 		// If we are not in a whiteout, notify them of the rules.
 		else{
-			player.sendMessage(Colors.Gold + "[" + Kikkit.getPluginName() + "]");
+			player.sendMessage(Colors.Gold + "[" + Kikkit.getPluginName() + " by Kr1sc]");
 			player.sendMessage(Colors.Gold + "Please respect others' property and no griefing.");
 			player.sendMessage(Colors.Gold + "Fire and lava are in a whiteout.");
 		}

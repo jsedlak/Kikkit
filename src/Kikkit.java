@@ -13,7 +13,7 @@ import java.util.Date;
 public class Kikkit extends Plugin {
 	public static Logger MinecraftLog = null;				// Used to log stuff
 	public static final String PublicName = "Kikkit";		// Our mod's name
-	public static final String Version = "1.1";				// The version!
+	public static final String Version = "1.2";				// The version!
 	public static final long UPDATE_INTERVAL = 30000;		// How often the plugin should update itself
 	
 	public static String getPluginName(){
@@ -31,6 +31,8 @@ public class Kikkit extends Plugin {
 	private TemporaryWhitelist tempWhitelist;
 	
 	private GenericConfig genConfig;		// Generic configuration loading
+	
+	private WarpList secretWarpList;
 	
 	Timer updateTimer;
 	
@@ -66,6 +68,7 @@ public class Kikkit extends Plugin {
 		genConfig = new GenericConfig("config/em.config");
 		tempWhitelist = new TemporaryWhitelist("config/em-whitelist.txt", genConfig, "wl-");
 		fireWhitelist = new Whitelist("config/em-fire.txt");
+		secretWarpList = new WarpList();
 		
 		// HOOK! Wasn't that a movie? Anyways, attach some event handlers (I'm a C#er, okay?)
 		etc.getLoader().addListener(PluginLoader.Hook.COMMAND, emListener, this, PluginListener.Priority.MEDIUM);
@@ -123,6 +126,10 @@ public class Kikkit extends Plugin {
 	
 	public Whitelist getFireWhitelist(){
 		return fireWhitelist;
+	}
+	
+	public WarpList getSecretWarpList(){
+		return secretWarpList;
 	}
 	
 	/*
