@@ -1,6 +1,9 @@
 
 public class KikkitListener extends PluginListener{
+	private static final int MAX_IGNITE_ATTEMPTS = 5;
+	
 	private Kikkit plugin;
+	private KickCounter igniteKickCounter = new KickCounter();
 	
 	public KikkitListener(Kikkit plugin){
 		this.plugin = plugin;
@@ -13,6 +16,12 @@ public class KikkitListener extends PluginListener{
 			if(!plugin.canPlayerIgnite(player)){
 				plugin.broadcast(Colors.Red + player.getName() + " has tried using the lava bucket, but has been blocked!");
 				Kikkit.MinecraftLog.info(player.getName() + " has tried to use " + item.itemType.name() + " with Id " + item.getItemId() + ".");
+				
+				if(igniteKickCounter.checkAndSet(player.getName()) > MAX_IGNITE_ATTEMPTS){
+					player.kick("You have been kicked for attempting to grief.");
+					plugin.broadcast(Colors.Purple + "[Kikkit] " + player.getName() + " has been kicked for trying to place lava.");
+				}
+				
 				return true;
 			}
 		}
@@ -20,6 +29,12 @@ public class KikkitListener extends PluginListener{
 			if(!plugin.canPlayerIgnite(player)){
 				plugin.broadcast(Colors.Red + player.getName() + " has tried placing TNT, but has been blocked!");
 				Kikkit.MinecraftLog.info(player.getName() + " has tried to use " + item.itemType.name() + " with Id " + item.getItemId() + ".");
+				
+				if(igniteKickCounter.checkAndSet(player.getName()) > MAX_IGNITE_ATTEMPTS){
+					player.kick("You have been kicked for attempting to grief.");
+					plugin.broadcast(Colors.Purple + "[Kikkit] " + player.getName() + " has been kicked for trying to use TNT.");
+				}
+				
 				return true;
 			}
 		}
@@ -44,14 +59,53 @@ public class KikkitListener extends PluginListener{
 		// Check if the player can ignite stuff
 		if(!plugin.canPlayerIgnite(player)){
 			plugin.broadcast(Colors.Red + player.getName() + " is trying to set something on fire!");
+			
+			if(igniteKickCounter.checkAndSet(player.getName()) > MAX_IGNITE_ATTEMPTS){
+				player.kick("You have been kicked for attempting to grief.");
+				plugin.broadcast(Colors.Purple + "[Kikkit] " + player.getName() + " has been kicked for trying to ignite something.");
+			}
+			
 			return true;
 		}
+		
 		return false;
 	}
 	
 	public boolean onCommand(Player player, String [] split){
+		// Command: warpto
+		// Usage: 
+		// 	   /warpto [player name] [warp name]
+		if(split[0].equalsIgnoreCase("/warpto")){
+			if(!player.canUseCommand("/warpto")) return false;
+			
+			if(split.length == 3){
+				WarpList wl = plugin.getServerModWarps();
+				
+				WarpList.WarpPoint wp = wl.get(split[2]);
+				
+				if(wp == null){
+					player.sendMessage(Colors.Red + "Can't find warp: " + split[2]);
+					return true;
+				}
+				
+				Player target = etc.getServer().getPlayer(split[1]);
+				
+				if(target == null){
+					player.sendMessage(Colors.Red + "Can't find player: " + split[1]);
+					return true;
+				}
+				else{
+					target.setX(wp.X);
+					target.setY(wp.Y);
+					target.setZ(wp.Z);
+				}
+			}
+			
+			return true;
+		}
+		
 		if(split[0].equalsIgnoreCase("/fire")){
-			if(!player.isAdmin()) return false;
+			if(!player.canUseCommand("/fire")) return false;
 			
 			Whitelist fireList = plugin.getFireWhitelist();
 
@@ -80,10 +134,7 @@ public class KikkitListener extends PluginListener{
 		}
 		
 		if(split[0].equalsIgnoreCase("/tempwl")){
-			if(!player.isAdmin()){
-				//player.sendMessage(Colors.Red + "Unknown command.");
-				return false;
-			}
+			if(!player.canUseCommand("/tempwl")) return false;
 			
 			TemporaryWhitelist tempList = plugin.getTemporaryWhitelist();
 			
@@ -92,6 +143,12 @@ public class KikkitListener extends PluginListener{
 				
 				if(tempList.getIsOverriden()) player.sendMessage(Colors.Red + "Whitelist override is now ON. (Players can join freely)");
 				else player.sendMessage(Colors.Red + "Whitelist override is now OFF.");
+			}
+			else if(split.length == 2){
+				if(split[1].equalsIgnoreCase("?")){
+					player.sendMessage(Colors.Red + "[USAGE] /tempwl <command> <player name>");
+					player.sendMessage(Colors.Red + "[USAGE] Commands: add, remove, check");
+				}
 			}
 			else if(split.length == 3){
 				if(split[1].equalsIgnoreCase("add")){
@@ -112,9 +169,7 @@ public class KikkitListener extends PluginListener{
 		}
 		
 		if(split[0].equalsIgnoreCase("/setsecret")){
-			if(!player.isAdmin() && !player.isInGroup(Groups.Moderator) && !player.isInGroup(Groups.Vip)){
-				return false;
-			}
+			if(!player.canUseCommand("/setsecret")) return false;
 			
 			WarpList list = plugin.getSecretWarpList();
 			
@@ -126,9 +181,7 @@ public class KikkitListener extends PluginListener{
 		}
 		
 		if(split[0].equalsIgnoreCase("/secret")){
-			if(!player.isAdmin() && !player.isInGroup(Groups.Moderator) && !player.isInGroup(Groups.Vip)){
-				return false;
-			}
+			if(!player.canUseCommand("/secret")) return false;
 			
 			WarpList list = plugin.getSecretWarpList();
 			

@@ -13,7 +13,7 @@ import java.util.Date;
 public class Kikkit extends Plugin {
 	public static Logger MinecraftLog = null;				// Used to log stuff
 	public static final String PublicName = "Kikkit";		// Our mod's name
-	public static final String Version = "1.2.2";			// The version!
+	public static final String Version = "1.3";				// The version!
 	public static final long UPDATE_INTERVAL = 30000;		// How often the plugin should update itself
 	
 	public static String getPluginName(){
@@ -33,6 +33,7 @@ public class Kikkit extends Plugin {
 	private GenericConfig genConfig;		// Generic configuration loading
 	
 	private WarpList secretWarpList;
+	private WarpList hModWarpList;
 	
 	Timer updateTimer;
 	
@@ -69,6 +70,7 @@ public class Kikkit extends Plugin {
 		tempWhitelist = new TemporaryWhitelist("config/em-whitelist.txt", genConfig, "wl-");
 		fireWhitelist = new Whitelist("config/em-fire.txt");
 		secretWarpList = new WarpList();
+		hModWarpList = new WarpList("warps.txt");
 		
 		// HOOK! Wasn't that a movie? Anyways, attach some event handlers (I'm a C#er, okay?)
 		etc.getLoader().addListener(PluginLoader.Hook.COMMAND, emListener, this, PluginListener.Priority.MEDIUM);
@@ -79,6 +81,8 @@ public class Kikkit extends Plugin {
 		// Setup a timer so that the update method gets called (and call it)
 		updateTimer = new Timer();
 		updateTimer.schedule(new KikkitUpdater(this), 0, UPDATE_INTERVAL);
+		
+		broadcast(Colors.Purple + getPluginName() + " has been initialized.");
 	}
 	
 	public void broadcast(String msg){
@@ -130,6 +134,10 @@ public class Kikkit extends Plugin {
 	
 	public WarpList getSecretWarpList(){
 		return secretWarpList;
+	}
+	
+	public WarpList getServerModWarps(){
+		return hModWarpList;
 	}
 	
 	/*

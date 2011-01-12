@@ -11,6 +11,10 @@ public class WarpList {
 		load(DefaultSecretWarpFile);
 	}
 	
+	public WarpList(String filename){
+		load(filename);
+	}
+	
 	public WarpPoint get(String username){
 		for(WarpPoint w : warps){
 			if(w.Username.equalsIgnoreCase(username)){
