@@ -1,6 +1,16 @@
+import java.io.File;
 import java.util.Timer;
 import java.util.logging.Logger;
 import java.util.Date;
+
+import org.bukkit.Player;
+import org.bukkit.Server;
+import org.bukkit.event.Event.Priority;
+import org.bukkit.event.Event;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.PluginLoader;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
 
 /*
  * Kikkit
@@ -10,11 +20,12 @@ import java.util.Date;
  * Created: 2011-01-04
  */
 @SuppressWarnings("deprecation")
-public class Kikkit extends Plugin {
+public class Kikkit extends JavaPlugin {
 	public static Logger MinecraftLog = null;				// Used to log stuff
 	public static final String PublicName = "Kikkit";		// Our mod's name
 	public static final String Version = "1.3";				// The version!
 	public static final long UPDATE_INTERVAL = 30000;		// How often the plugin should update itself
+	public static final int MAX_IGNITE_ATTEMPTS = 5;
 	
 	public static String getPluginName(){
 		return PublicName + " v" + Version;
@@ -24,7 +35,10 @@ public class Kikkit extends Plugin {
 		return datetime.getHours() + ":" + datetime.getMinutes() + ":" + datetime.getSeconds();
 	}
 	
-	private KikkitListener emListener;	// Used to handle server events
+	private KickCounter igniteKickCounter = new KickCounter();
+	
+	private KikkitPlayerListener playerListener;	// Used to handle server events
+	private KikkitBlockListener  blockListener;
 	private boolean isEnabled = true;		// Whether or not the plugin is enabled
 	
 	private Whitelist fireWhitelist;		// Who can ignite stuff
@@ -37,21 +51,28 @@ public class Kikkit extends Plugin {
 	
 	Timer updateTimer;
 	
-	public Kikkit(){
+	public Kikkit(PluginLoader pluginLoader, 
+			Server instance, PluginDescriptionFile desc,
+			File plugin, ClassLoader cLoader) {
+        super(pluginLoader, instance, desc, plugin, cLoader);
+        
 		// Instantiate our listener object
-		emListener = new KikkitListener(this);
+		playerListener = new KikkitPlayerListener(this);
+		blockListener = new KikkitBlockListener(this);
 		
 		// Get the logging device
 		if(MinecraftLog == null)
 			MinecraftLog = Logger.getLogger("Minecraft");
 	}
 	
-	public void enable(){
+	public void onEnable(){
 		MinecraftLog.info(getPluginName() + " has been enabled.");
 		isEnabled = true;
+		
+		initialize();
 	}
 	
-	public void disable(){
+	public void onDisable(){
 		MinecraftLog.info(getPluginName() + " has been disabled.");
 		isEnabled = false;
 		
@@ -61,7 +82,7 @@ public class Kikkit extends Plugin {
 		}
 	}
 	
-	public void initialize(){
+	protected void initialize(){
 		// Tell the console that we have started loading the plugin
 		MinecraftLog.info(getPluginName() + " is being initialized.");
 	
@@ -73,23 +94,31 @@ public class Kikkit extends Plugin {
 		hModWarpList = new WarpList("warps.txt");
 		
 		// HOOK! Wasn't that a movie? Anyways, attach some event handlers (I'm a C#er, okay?)
-		etc.getLoader().addListener(PluginLoader.Hook.COMMAND, emListener, this, PluginListener.Priority.MEDIUM);
+		PluginManager pm = getServer().getPluginManager();
+		pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Normal, this);
+		pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Normal, this);
+		pm.registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
+		pm.registerEvent(Event.Type.BLOCK_CANBUILD, blockListener, Priority.Normal, this);
+		pm.registerEvent(Event.Type.BLOCK_IGNITE, blockListener, Priority.Normal, this);
+		/*etc.getLoader().addListener(PluginLoader.Hook.COMMAND, emListener, this, PluginListener.Priority.MEDIUM);
 		etc.getLoader().addListener(PluginLoader.Hook.IGNITE, emListener, this, PluginListener.Priority.MEDIUM);
 		etc.getLoader().addListener(PluginLoader.Hook.LOGIN, emListener, this, PluginListener.Priority.MEDIUM);
-		etc.getLoader().addListener(PluginLoader.Hook.ITEM_USE, emListener, this, PluginListener.Priority.MEDIUM);
+		etc.getLoader().addListener(PluginLoader.Hook.ITEM_USE, emListener, this, PluginListener.Priority.MEDIUM);*/
+		
 		
 		// Setup a timer so that the update method gets called (and call it)
 		updateTimer = new Timer();
 		updateTimer.schedule(new KikkitUpdater(this), 0, UPDATE_INTERVAL);
 		
-		broadcast(Colors.Purple + getPluginName() + " has been initialized.");
+		//broadcast(Colors.Purple + getPluginName() + " has been initialized.");
 	}
 	
+	/*
 	public void broadcast(String msg){
 		for(Player player : etc.getServer().getPlayerList()){
 			player.sendMessage(msg);
 		}
-	}
+	}*/
 	
 	/*
 	 * Updates the plugin periodically.
@@ -102,11 +131,11 @@ public class Kikkit extends Plugin {
 		if(current != tempWhitelist.getIsEnabled()){
 			if(tempWhitelist.getIsEnabled()){
 				MinecraftLog.info("Enabling whitelist temporarily.");
-				broadcast(Colors.Purple + "Server entered a whiteout until (at least) " + getTimeStampString(tempWhitelist.getCurrentPeriod().End) + ".");
+				//broadcast(Colors.Purple + "Server entered a whiteout until (at least) " + getTimeStampString(tempWhitelist.getCurrentPeriod().End) + ".");
 			}
 			else {
 				MinecraftLog.info("Disabling whitelist temporarily.");
-				broadcast(Colors.Purple + "The server has exited a whiteout.");
+				//broadcast(Colors.Purple + "The server has exited a whiteout.");
 			}
 		}
 	}
@@ -138,6 +167,10 @@ public class Kikkit extends Plugin {
 	
 	public WarpList getServerModWarps(){
 		return hModWarpList;
+	}
+	
+	public KickCounter getIgnitionKickCounter(){
+		return igniteKickCounter;
 	}
 	
 	/*
