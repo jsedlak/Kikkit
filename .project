@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
 	<name>Kikkit</name>
-	<comment></comment>
+	<comment>Plugin for the Bukkit Minecraft Server Mod</comment>
 	<projects>
 	</projects>
 	<buildSpec>
