@@ -1,5 +1,4 @@
 import org.bukkit.ItemStack;
-import org.bukkit.Location;
 import org.bukkit.Player;
 import org.bukkit.event.player.*;
 
@@ -26,10 +25,10 @@ public class KikkitPlayerListener extends PlayerListener {
 		if(item.getTypeID() == ItemConstants.LavaBucketId){
 			if(!plugin.canPlayerIgnite(player)){
 				plugin.broadcast(/*Colors.Red + */player.getName() + " has tried using the lava bucket, but has been blocked!");
-				Kikkit.MinecraftLog.info(player.getName() + " has tried to use " + item.getType().name() + " with Id " + item.getItemId() + ".");
+				Kikkit.MinecraftLog.info(player.getName() + " has tried to use " + item.getType().name() + " with Id " + item.getTypeID() + ".");
 				
 				if(igniteKickCounter.checkAndSet(player.getName()) >= Kikkit.MAX_IGNITE_ATTEMPTS){
-					player.kick("You have been kicked for attempting to grief.");
+					player.kickPlayer("You have been kicked for attempting to grief.");
 					plugin.broadcast(/*Colors.Purple + "[Kikkit] " + */player.getName() + " has been kicked for trying to place lava.");
 				}
 				
@@ -39,10 +38,10 @@ public class KikkitPlayerListener extends PlayerListener {
 		else if(item.getTypeID() == ItemConstants.TntId){
 			if(!plugin.canPlayerIgnite(player)){
 				plugin.broadcast(/*Colors.Red + */player.getName() + " has tried placing TNT, but has been blocked!");
-				Kikkit.MinecraftLog.info(player.getName() + " has tried to use " + item.getType().name() + " with Id " + item.getItemId() + ".");
+				Kikkit.MinecraftLog.info(player.getName() + " has tried to use " + item.getType().name() + " with Id " + item.getTypeID() + ".");
 				
 				if(igniteKickCounter.checkAndSet(player.getName()) >= Kikkit.MAX_IGNITE_ATTEMPTS){
-					player.kick("You have been kicked for attempting to grief.");
+					player.kickPlayer("You have been kicked for attempting to grief.");
 					plugin.broadcast(/*Colors.Purple + "[Kikkit] " + */player.getName() + " has been kicked for trying to use TNT.");
 				}
 				
@@ -69,7 +68,7 @@ public class KikkitPlayerListener extends PlayerListener {
 			// Otherwise kick them.
 			else{
 				Kikkit.MinecraftLog.info(player.getName() + " has been kicked for not being on the temporary whitelist.");
-				player.kick("You were kicked because you are not on the whitelist, check back in a few hours.");
+				player.kickPlayer("You were kicked because you are not on the whitelist, check back in a few hours.");
 				plugin.broadcast(/*Colors.Gold + */player.getName() + " was kicked for not being on the whitelist.");
 			}
 		}
@@ -92,7 +91,7 @@ public class KikkitPlayerListener extends PlayerListener {
     	
     	// Command: warpto [player name] [warp name]
 		if(split[0].equalsIgnoreCase("/warpto")){
-			if(!player.canUseCommand("/warpto")) {
+			if(!plugin.canUseCommand(player, "/warpto")) {
 				setCommandHandled(event, false);
 				return;
 			}
@@ -125,7 +124,7 @@ public class KikkitPlayerListener extends PlayerListener {
 		}
 		// Command /fire
 		else if(split[0].equalsIgnoreCase("/fire")){
-			if(!player.canUseCommand("/fire")){
+			if(!plugin.canUseCommand(player, "/fire")){
 				setCommandHandled(event, false);
 				return;
 			}
@@ -135,7 +134,7 @@ public class KikkitPlayerListener extends PlayerListener {
 			if(split.length == 1){
 				fireList.setIsOverriden(!fireList.getIsOverriden());
 				
-				if(fireList.getIsOverriden()) player.sendMessage(Colors.Red + "Firelist override is ON. Players can use fire.");
+				if(fireList.getIsOverriden()) player.sendMessage(/*Colors.Red + */"Firelist override is ON. Players can use fire.");
 				else player.sendMessage(/*Colors.Red + */"Firelist override is OFF. Players can't use fire.");
 			}
 			else if(split.length == 3){
@@ -148,13 +147,13 @@ public class KikkitPlayerListener extends PlayerListener {
 					player.sendMessage(/*Colors.Red + */split[2] + " has been removed from the Fire/Lava whitelist.");
 				}
 				else if(split[1].equalsIgnoreCase("check")){
-					if(fireList.has(split[2])) player.sendMessage(Colors.Red + split[2] + " is on the Fire/Lava whitelist.");
+					if(fireList.has(split[2])) player.sendMessage(/*Colors.Red + */split[2] + " is on the Fire/Lava whitelist.");
 					else player.sendMessage(/*Colors.Red + */split[2] + " is NOT on the Fire/Lava whitelist.");
 				}
 			}
 		}
 		else if(split[0].equalsIgnoreCase("/tempwl")){
-			if(!player.canUseCommand("/tempwl")){
+			if(!plugin.canUseCommand(player, "/tempwl")){
 				setCommandHandled(event, false);
 				return;
 			}
@@ -164,8 +163,8 @@ public class KikkitPlayerListener extends PlayerListener {
 			if(split.length == 1){
 				tempList.setIsOverriden(!tempList.getIsOverriden());
 				
-				if(tempList.getIsOverriden()) player.sendMessage(Colors.Red + "Whitelist override is now ON. (Players can join freely)");
-				else player.sendMessage(Colors.Red + "Whitelist override is now OFF.");
+				if(tempList.getIsOverriden()) player.sendMessage(/*Colors.Red + */"Whitelist override is now ON. (Players can join freely)");
+				else player.sendMessage(/*Colors.Red + */"Whitelist override is now OFF.");
 			}
 			else if(split.length == 2){
 				if(split[1].equalsIgnoreCase("?")){
@@ -191,20 +190,20 @@ public class KikkitPlayerListener extends PlayerListener {
 			return;
 		}
 		else if(split[0].equalsIgnoreCase("/setsecret")){
-			if(!player.canUseCommand("/setsecret")) {
+			if(!plugin.canUseCommand(player, "/setsecret")) {
 				setCommandHandled(event, false);
 				return;
 			}
 			
 			WarpList list = plugin.getSecretWarpList();
 			
-			list.set(player.getName(), player.getX(), player.getY(), player.getZ());
+			list.set(player.getName(), player.getLocation());
 			
 			player.sendMessage(/*Colors.Red + */"Secret warp has been set.");
 
 		}
     	else if(split[0].equalsIgnoreCase("/secret")){
-			if(!player.canUseCommand("/secret")){
+			if(!plugin.canUseCommand(player, "/secret")){
 				setCommandHandled(event, false);
 				return;
 			}
@@ -214,9 +213,11 @@ public class KikkitPlayerListener extends PlayerListener {
 			WarpList.WarpPoint wp = list.get(player.getName());
 			
 			if(wp != null){
-				player.setX(wp.X);
+				/*player.setX(wp.X);
 				player.setY(wp.Y);
 				player.setZ(wp.Z);
+				*/
+				player.teleportTo(wp.getLocation());
 				
 				player.sendMessage(/*Colors.Red + */"Secret Whoosh!");
 			}

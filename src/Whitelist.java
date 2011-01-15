@@ -46,7 +46,7 @@ public class Whitelist {
 	}
 	
 	public void save(){
-		FileWriter outputFile;
+		FileWriter outputFile = null;
 		
 		try {		
 			outputFile = new FileWriter(internalFilename, false);
@@ -61,11 +61,19 @@ public class Whitelist {
 				outputFile.write(person + "\n");
 			}
 			
-			outputFile.close();
+			
 		}
 		catch (IOException e) {
 			Kikkit.MinecraftLog.info(e.getMessage());
 		}	
+		finally{
+			// TODO: Why do we need to do this?
+			try{
+				if(outputFile != null)
+					outputFile.close();
+			}
+			catch(Exception ex) {}
+		}
 	}
 	
 	public void add(String user){

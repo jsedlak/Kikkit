@@ -55,13 +55,17 @@ public class Kikkit extends JavaPlugin {
 	private WarpList secretWarpList;
 	private WarpList hModWarpList;
 	
+	private SecurityManager securityManager;
+	
 	Timer updateTimer;
 	
-	public Kikkit(PluginLoader pluginLoader, 
-			Server instance, PluginDescriptionFile desc,
-			File plugin, ClassLoader cLoader) {
+	public Kikkit(
+			PluginLoader pluginLoader, Server instance, 
+			PluginDescriptionFile desc,
+			File folder, File plugin, 
+			ClassLoader cLoader) {
 		
-        super(pluginLoader, instance, desc, plugin, cLoader);
+        super(pluginLoader, instance, desc, folder, plugin, cLoader);
 
         Current = this;
         
@@ -96,6 +100,7 @@ public class Kikkit extends JavaPlugin {
 		MinecraftLog.info(getPluginName() + " is being initialized.");
 	
 		// Load the configuration, and the whitelist files.
+		securityManager = new SecurityManager();
 		genConfig = new GenericConfig("config/em.config");
 		tempWhitelist = new TemporaryWhitelist("config/em-whitelist.txt", genConfig, "wl-");
 		fireWhitelist = new Whitelist("config/em-fire.txt");
@@ -120,6 +125,14 @@ public class Kikkit extends JavaPlugin {
 		updateTimer.schedule(new KikkitUpdater(this), 0, UPDATE_INTERVAL);
 		
 		//broadcast(Colors.Purple + getPluginName() + " has been initialized.");
+	}
+	
+	public boolean canUseCommand(Player player, String command){
+		return canUseCommand(player.getName(), command);
+	}
+	
+	public boolean canUseCommand(String player, String command){
+		return securityManager.canUseCommand(player, command);
 	}
 	
 	public void broadcast(String msg){
@@ -149,11 +162,17 @@ public class Kikkit extends JavaPlugin {
 	}
 	
 	public boolean canPlayerLogin(Player player){
-		return tempWhitelist.isOnList(player.getName()) || player.isInGroup(Groups.Vip) || player.isInGroup(Groups.Moderator) || player.isAdmin();
+		return tempWhitelist.isOnList(player.getName()) || 
+			securityManager.isInGroup(player, Groups.Vip) || 
+			securityManager.isInGroup(player, Groups.Moderator) || 
+			securityManager.isInGroup(player, Groups.Admin);
 	}
 	
 	public boolean canPlayerIgnite(Player player){
-		return fireWhitelist.isOnList(player.getName()) || player.isInGroup(Groups.Vip) || player.isInGroup(Groups.Moderator) || player.isAdmin();
+		return fireWhitelist.isOnList(player.getName()) || 
+			securityManager.isInGroup(player, Groups.Vip) || 
+			securityManager.isInGroup(player, Groups.Moderator) || 
+			securityManager.isInGroup(player, Groups.Admin);
 	}
 	
 	// Gets whether or not the plugin is enabled

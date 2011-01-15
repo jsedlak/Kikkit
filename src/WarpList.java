@@ -27,6 +27,10 @@ public class WarpList {
 		return null;
 	}
 	
+	public void set(String username, Location location){
+		set(username, location.getX(), location.getY(), location.getZ());
+	}
+	
 	public void set(String username, double x, double y, double z){
 		WarpPoint warp = get(username);
 		
