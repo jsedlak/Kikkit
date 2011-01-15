@@ -2,8 +2,7 @@
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.*;
-
-import org.bukkit.Player;
+import org.bukkit.entity.Player;
 
 public class SecurityManager {
 	private static final String DefaultGroupsConfig = "config/groups.txt";

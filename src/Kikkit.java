@@ -3,7 +3,8 @@ import java.util.Timer;
 import java.util.logging.Logger;
 import java.util.Date;
 
-import org.bukkit.Player;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.event.Event.Priority;
@@ -119,6 +120,7 @@ public class Kikkit extends JavaPlugin {
 		pm.registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
 		pm.registerEvent(Event.Type.BLOCK_CANBUILD, blockListener, Priority.Normal, this);
 		pm.registerEvent(Event.Type.BLOCK_IGNITE, blockListener, Priority.Normal, this);
+		pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.Normal, this);
 		/*etc.getLoader().addListener(PluginLoader.Hook.COMMAND, emListener, this, PluginListener.Priority.MEDIUM);
 		etc.getLoader().addListener(PluginLoader.Hook.IGNITE, emListener, this, PluginListener.Priority.MEDIUM);
 		etc.getLoader().addListener(PluginLoader.Hook.LOGIN, emListener, this, PluginListener.Priority.MEDIUM);
@@ -129,7 +131,7 @@ public class Kikkit extends JavaPlugin {
 		updateTimer = new Timer();
 		updateTimer.schedule(new KikkitUpdater(this), 0, UPDATE_INTERVAL);
 		
-		//broadcast(Colors.Purple + getPluginName() + " has been initialized.");
+		broadcast(ChatColor.DARK_PURPLE + getPluginName() + " has been initialized.");
 	}
 	
 	public boolean canUseCommand(Player player, String command){
@@ -211,6 +213,10 @@ public class Kikkit extends JavaPlugin {
 	
 	public KickCounter getIgnitionKickCounter(){
 		return igniteKickCounter;
+	}
+	
+	public SecurityManager getSecurityManager(){
+		return securityManager;
 	}
 	
 	/*

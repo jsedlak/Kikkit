@@ -8,7 +8,7 @@ public class KickCounter extends ArrayList<KickCount> {
 			KickCount kc = this.get(i);
 			
 			if(kc.Username.equalsIgnoreCase(user)) {
-				kc.Count++;
+				kc.Count = kc.Count + 1;
 				return kc.Count;
 			}
 		}

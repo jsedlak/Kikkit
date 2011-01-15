@@ -2,6 +2,7 @@ import java.io.*;
 import java.util.*;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 
 public class WarpList {
 	public static final String DefaultSecretWarpFile = "secret-warps.txt";
@@ -53,12 +54,12 @@ public class WarpList {
 	}
 	
 	public void load(String filename){
-		internalFilename = filename;
+		internalFilename = Kikkit.getCurrentWorld().getName() + "/" + filename;
 		
 		try{
 			warps.clear();
 			
-			FileInputStream inputStream = new FileInputStream(filename);
+			FileInputStream inputStream = new FileInputStream(internalFilename);
 			InputStreamReader reader = new InputStreamReader(inputStream, "UTF-8");
 			
 			Scanner scanner = new Scanner(reader);
@@ -85,6 +86,8 @@ public class WarpList {
 	}
 	
 	public void save(){
+		Kikkit.MinecraftLog.info("Saving warp list to " + internalFilename);
+		
 		FileWriter outputFile;
 		
 		try {		
@@ -116,6 +119,10 @@ public class WarpList {
 			Location location = new Location(Kikkit.getCurrentWorld(), X, Y, Z);
 			
 			return location;
+		}
+		
+		public Location getLocation(World world){
+			return new Location(world, X, Y, Z);
 		}
 	}
 }

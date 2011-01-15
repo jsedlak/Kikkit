@@ -1,5 +1,6 @@
-import org.bukkit.Player;
-import org.bukkit.Block;
+import org.bukkit.ChatColor;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.event.block.*;
 
 public class KikkitBlockListener extends BlockListener {
@@ -31,11 +32,11 @@ public class KikkitBlockListener extends BlockListener {
 		
 		// Check if the player can ignite stuff
 		if(!plugin.canPlayerIgnite(player)){
-			plugin.broadcast(/*Colors.Red + */player.getName() + " is trying to set something on fire!");
+			plugin.broadcast(ChatColor.RED + player.getName() + " is trying to set something on fire!");
 			
 			if(igniteKickCounter.checkAndSet(player.getName()) >= Kikkit.MAX_IGNITE_ATTEMPTS){
 				player.kickPlayer("You have been kicked for attempting to grief.");
-				plugin.broadcast(/*Colors.Purple + "[Kikkit] " + */player.getName() + " has been kicked for trying to ignite something.");
+				plugin.broadcast(ChatColor.DARK_PURPLE + player.getName() + " has been kicked for trying to ignite something.");
 			}
 			
 			event.setCancelled(true);
