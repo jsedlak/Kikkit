@@ -1,6 +1,8 @@
 import java.io.*;
 import java.util.*;
 
+import org.bukkit.Location;
+
 public class WarpList {
 	public static final String DefaultSecretWarpFile = "secret-warps.txt";
 	
@@ -105,5 +107,11 @@ public class WarpList {
 	public class WarpPoint {
 		public String Username;
 		public double X, Y, Z;
+		
+		public Location getLocation(){
+			Location location = new Location(Kikkit.getCurrentWorld(), X, Y, Z);
+			
+			return location;
+		}
 	}
 }

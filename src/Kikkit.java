@@ -5,6 +5,7 @@ import java.util.Date;
 
 import org.bukkit.Player;
 import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -21,6 +22,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 @SuppressWarnings("deprecation")
 public class Kikkit extends JavaPlugin {
+	public static Kikkit Current = null;
 	public static Logger MinecraftLog = null;				// Used to log stuff
 	public static final String PublicName = "Kikkit";		// Our mod's name
 	public static final String Version = "1.3";				// The version!
@@ -33,6 +35,10 @@ public class Kikkit extends JavaPlugin {
 	
 	public static String getTimeStampString(Date datetime){
 		return datetime.getHours() + ":" + datetime.getMinutes() + ":" + datetime.getSeconds();
+	}
+	
+	public static World getCurrentWorld(){
+		return Current.getServer().getWorlds()[0];
 	}
 	
 	private KickCounter igniteKickCounter = new KickCounter();
@@ -54,7 +60,10 @@ public class Kikkit extends JavaPlugin {
 	public Kikkit(PluginLoader pluginLoader, 
 			Server instance, PluginDescriptionFile desc,
 			File plugin, ClassLoader cLoader) {
+		
         super(pluginLoader, instance, desc, plugin, cLoader);
+
+        Current = this;
         
 		// Instantiate our listener object
 		playerListener = new KikkitPlayerListener(this);
@@ -113,12 +122,11 @@ public class Kikkit extends JavaPlugin {
 		//broadcast(Colors.Purple + getPluginName() + " has been initialized.");
 	}
 	
-	/*
 	public void broadcast(String msg){
-		for(Player player : etc.getServer().getPlayerList()){
+		for(Player player : getServer().getOnlinePlayers()){
 			player.sendMessage(msg);
 		}
-	}*/
+	}
 	
 	/*
 	 * Updates the plugin periodically.

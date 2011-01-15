@@ -116,9 +116,10 @@ public class KikkitPlayerListener extends PlayerListener {
 					return;
 				}
 				else{
-					target.setX(wp.X);
+					target.teleportTo(wp.getLocation());
+					/*target.setX(wp.X);
 					target.setY(wp.Y);
-					target.setZ(wp.Z);
+					target.setZ(wp.Z);*/
 				}
 			};
 		}
