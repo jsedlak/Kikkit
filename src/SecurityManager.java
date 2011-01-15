@@ -26,7 +26,9 @@ public class SecurityManager {
 		currentGroupFileName = groupsConfigFile;
 		currentPlayerFileName = playersConfigFile;
 		
-		Kikkit.MinecraftLog.info("Loading security:");
+		Kikkit.MinecraftLog.info("Loading security");
+		Kikkit.MinecraftLog.info("    Groups: " + groupsConfigFile);
+		Kikkit.MinecraftLog.info("    Players: " + playersConfigFile);
 		
 		loadGroups();
 		loadPlayers();
@@ -58,14 +60,14 @@ public class SecurityManager {
 					
 					groups.add(newGroup);
 					
-					Kikkit.MinecraftLog.info("    Added group: " + newGroup.getName());
+					if(Kikkit.IsDebugging) Kikkit.MinecraftLog.info("    Added group: " + newGroup.getName());
 					
 					String[] commands = data[1].split(",");
 					
 					// TODO: Why must we do a foreach here?
 					// Because java doesn't understand IEnumerable
 					for(String str : commands){
-						Kikkit.MinecraftLog.info("        command: " + str);
+						if(Kikkit.IsDebugging) Kikkit.MinecraftLog.info("        command: " + str);
 						newGroup.Commands.add(str);
 					}
 					
@@ -113,7 +115,7 @@ public class SecurityManager {
 					
 					group.Players.add(data[0]);
 					
-					Kikkit.MinecraftLog.info("    Added player to " + group.getName() + ": " + data[0]);
+					if(Kikkit.IsDebugging) Kikkit.MinecraftLog.info("    Added player to " + group.getName() + ": " + data[0]);
 				}
 			}
 		} catch (Exception e) {
@@ -127,16 +129,18 @@ public class SecurityManager {
 	}
 	
 	public boolean canUseCommand(String player, String command){
-		Kikkit.MinecraftLog.info("Groups to search: " + groups.size());
+		if(Kikkit.IsDebugging) Kikkit.MinecraftLog.info("Groups to search: " + groups.size());
 		
 		for(Group group : groups){
-			Kikkit.MinecraftLog.info("    canUseCommand is looking at " + group.getName());
+			if(Kikkit.IsDebugging) Kikkit.MinecraftLog.info("    canUseCommand is looking at " + group.getName());
 			
 			boolean ingroup = group.isInGroup(player);
 			boolean canuse = group.canUseCommand(command);
 			
-			Kikkit.MinecraftLog.info("        isInGroup: " + ingroup);
-			Kikkit.MinecraftLog.info("        canUseCommand: " + canuse);
+			if(Kikkit.IsDebugging) {
+				Kikkit.MinecraftLog.info("        isInGroup: " + ingroup);
+				Kikkit.MinecraftLog.info("        canUseCommand: " + canuse);
+			}
 			
 			//if(group.isInGroup(player) && group.canUseCommand(command)) return true;
 			if(ingroup && canuse) return true;
@@ -188,7 +192,7 @@ public class SecurityManager {
 		
 		public boolean canUseCommand(String cmd){
 			for(String command : Commands){
-				Kikkit.MinecraftLog.info("            internal command check: " + command);
+				if(Kikkit.IsDebugging) Kikkit.MinecraftLog.info("            internal command check: " + command);
 				
 				if(command.equalsIgnoreCase(cmd) || command.equalsIgnoreCase(ADMIN_OVERRIDE)) return true;
 			}
@@ -197,6 +201,9 @@ public class SecurityManager {
 		}
 		
 		public boolean isInGroup(String playerName){
+			// Provide the base case - a default group.
+			if(getName().equalsIgnoreCase(ADMIN_OVERRIDE)) return true;
+			
 			for(String user : Players){
 				if(user.equalsIgnoreCase(playerName)) return true;
 			}

@@ -224,8 +224,81 @@ public class KikkitPlayerListener extends PlayerListener {
 			else{
 				player.sendMessage(/*Colors.Red + */"You must set a secret warp first with /setsecret");
 			}
-			
 		}
+    	else if(split[0].equalsIgnoreCase("/sethome")){
+			if(!plugin.canUseCommand(player, "/sethome")) {
+				setCommandHandled(event, false);
+				return;
+			}
+			
+			WarpList list = plugin.getHomeWarpList();
+			
+			list.set(player.getName(), player.getLocation());
+			
+			player.sendMessage(/*Colors.Red + */"Home warp has been set.");
+
+		}
+    	else if(split[0].equalsIgnoreCase("/home")){
+			if(!plugin.canUseCommand(player, "/home")){
+				setCommandHandled(event, false);
+				return;
+			}
+			
+			WarpList list = plugin.getHomeWarpList();
+			
+			WarpList.WarpPoint wp = list.get(player.getName());
+			
+			if(wp != null){
+				player.teleportTo(wp.getLocation());
+				
+				player.sendMessage(/*Colors.Red + */"Whoosh to home!");
+			}
+			else{
+				player.sendMessage(/*Colors.Red + */"You must set a home warp first with /sethome");
+			}
+		}
+    	else if(split[0].equalsIgnoreCase("/time") || split[0].equalsIgnoreCase("/day") || split[0].equalsIgnoreCase("/night"))
+    	{
+    		if(!plugin.canUseCommand(player, "/time")){
+    			setCommandHandled(event, false);
+    			return;
+    		}
+    			
+    		try{
+				if(split[0].equalsIgnoreCase("/day") || (split.length == 2 && split[1].equalsIgnoreCase("day")))
+					plugin.getServer().setTime(Kikkit.DAY);
+				else if(split[0].equalsIgnoreCase("/night") || (split.length == 2 && split[1].equalsIgnoreCase("night")))
+					plugin.getServer().setTime(Kikkit.NIGHT);
+				else{
+					if(split.length > 1) plugin.getServer().setTime(Long.parseLong(split[1]));
+				}
+    		}
+    		catch(Exception ex){}
+    	}
+    	else if(split[0].equalsIgnoreCase("/debug")){
+    		if(!plugin.canUseCommand(player, "/debug")){
+				setCommandHandled(event, false);
+				return;
+			}
+    		
+    		Kikkit.IsDebugging = !Kikkit.IsDebugging;
+    	}
+    	else if(split[0].equalsIgnoreCase("/playerlist")){
+    		if(!plugin.canUseCommand(player, "/playerlist")){
+				setCommandHandled(event, false);
+				return;
+			}
+    		
+    		Player[] players = plugin.getServer().getOnlinePlayers();
+    		
+    		String total = "Players: ";
+    		for(int k = 0; k < players.length; k++){
+    			total += players[k].getName();
+    			if(k < players.length - 1) total += ", ";
+    		}
+    		
+    		player.sendMessage(total);
+    	}
 		
 		setCommandHandled(event, true);
     }

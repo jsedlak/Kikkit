@@ -24,8 +24,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Kikkit extends JavaPlugin {
 	public static Kikkit Current = null;
 	public static Logger MinecraftLog = null;				// Used to log stuff
+	public static boolean IsDebugging = false;
+	
 	public static final long UPDATE_INTERVAL = 30000;		// How often the plugin should update itself
 	public static final int MAX_IGNITE_ATTEMPTS = 5;
+	public static final int DAY = 0;
+	public static final int NIGHT = 13500;
 	
 	public static String getPluginName(){
 		return Current.getDescription().getName() + " v" + Current.getDescription().getVersion();
@@ -43,6 +47,7 @@ public class Kikkit extends JavaPlugin {
 	
 	private KikkitPlayerListener playerListener;	// Used to handle server events
 	private KikkitBlockListener  blockListener;
+	
 	private boolean isEnabled = true;		// Whether or not the plugin is enabled
 	
 	private Whitelist fireWhitelist;		// Who can ignite stuff
@@ -51,6 +56,7 @@ public class Kikkit extends JavaPlugin {
 	private GenericConfig genConfig;		// Generic configuration loading
 	
 	private WarpList secretWarpList;
+	private WarpList homeWarpList;
 	private WarpList hModWarpList;
 	
 	private SecurityManager securityManager;
@@ -103,6 +109,7 @@ public class Kikkit extends JavaPlugin {
 		tempWhitelist = new TemporaryWhitelist("config/em-whitelist.txt", genConfig, "wl-");
 		fireWhitelist = new Whitelist("config/em-fire.txt");
 		secretWarpList = new WarpList();
+		homeWarpList = new WarpList("player-homes.txt");
 		hModWarpList = new WarpList("warps.txt");
 		
 		// HOOK! Wasn't that a movie? Anyways, attach some event handlers (I'm a C#er, okay?)
@@ -132,7 +139,7 @@ public class Kikkit extends JavaPlugin {
 	public boolean canUseCommand(String player, String command){
 		boolean returnValue = securityManager.canUseCommand(player, command);
 		
-		MinecraftLog.info(player + " is trying to use " + command + " and result is " + returnValue);
+		if(Kikkit.IsDebugging) MinecraftLog.info(player + " is trying to use " + command + " and result is " + returnValue);
 		
 		return returnValue;
 	}
@@ -192,6 +199,10 @@ public class Kikkit extends JavaPlugin {
 	
 	public WarpList getSecretWarpList(){
 		return secretWarpList;
+	}
+	
+	public WarpList getHomeWarpList(){
+		return homeWarpList;
 	}
 	
 	public WarpList getServerModWarps(){
