@@ -1,4 +1,6 @@
 //import java.io.*;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.*;
 
 import org.bukkit.Player;
@@ -24,18 +26,25 @@ public class SecurityManager {
 		currentGroupFileName = groupsConfigFile;
 		currentPlayerFileName = playersConfigFile;
 		
+		Kikkit.MinecraftLog.info("Loading security:");
+		
 		loadGroups();
 		loadPlayers();
 	}
 	
 	private void loadGroups(){
-		Scanner fileReader = null;
+		FileInputStream inputStream;
+		InputStreamReader reader;
+		Scanner scanner = null;
 		try {
-			fileReader = new Scanner(currentGroupFileName);
+			inputStream = new FileInputStream(currentGroupFileName);
+			reader = new InputStreamReader(inputStream, "UTF-8");
 			
-			String line;
-			while(fileReader.hasNextLine()){
-				line = fileReader.nextLine();
+			scanner = new Scanner(reader);
+
+			String line = "";
+			while(scanner.hasNextLine()){
+				line = scanner.nextLine();
 				
 				// Check for comments.
 				if(line.startsWith("#") || line.startsWith("//")) continue;
@@ -47,34 +56,45 @@ public class SecurityManager {
 				if(data.length == 2){
 					Group newGroup = new Group(data[0]);
 					
-					String[] commands = data[1].split("/");
+					groups.add(newGroup);
+					
+					Kikkit.MinecraftLog.info("    Added group: " + newGroup.getName());
+					
+					String[] commands = data[1].split(",");
 					
 					// TODO: Why must we do a foreach here?
 					// Because java doesn't understand IEnumerable
 					for(String str : commands){
+						Kikkit.MinecraftLog.info("        command: " + str);
 						newGroup.Commands.add(str);
 					}
 					
-					groups.add(newGroup);
+					
 				}
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			// e.printStackTrace();
+			Kikkit.MinecraftLog.info(e.getMessage());
 		}
 		finally{
-			if(fileReader != null) fileReader.close();
+			if(scanner != null) scanner.close();
 		}
 	}
 	
 	private void loadPlayers(){
-		Scanner fileReader = null;
+		FileInputStream inputStream;
+		InputStreamReader reader;
+		Scanner scanner = null;
 		try {
-			fileReader = new Scanner(currentPlayerFileName);
+			inputStream = new FileInputStream(currentPlayerFileName);
+			reader = new InputStreamReader(inputStream, "UTF-8");
 			
-			String line;
-			while(fileReader.hasNextLine()){
-				line = fileReader.nextLine();
+			scanner = new Scanner(reader);
+			
+			String line = "";
+			while(scanner.hasNextLine()){
+				line = scanner.nextLine();
 				
 				// Check for comments.
 				if(line.startsWith("#") || line.startsWith("//")) continue;
@@ -92,20 +112,34 @@ public class SecurityManager {
 					}
 					
 					group.Players.add(data[0]);
+					
+					Kikkit.MinecraftLog.info("    Added player to " + group.getName() + ": " + data[0]);
 				}
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			// e.printStackTrace();
+			Kikkit.MinecraftLog.info(e.getMessage());
 		}
 		finally{
-			if(fileReader != null) fileReader.close();
+			if(scanner != null) scanner.close();
 		}
 	}
 	
 	public boolean canUseCommand(String player, String command){
+		Kikkit.MinecraftLog.info("Groups to search: " + groups.size());
+		
 		for(Group group : groups){
-			if(group.isInGroup(player) && group.canUseCommand(command)) return true;
+			Kikkit.MinecraftLog.info("    canUseCommand is looking at " + group.getName());
+			
+			boolean ingroup = group.isInGroup(player);
+			boolean canuse = group.canUseCommand(command);
+			
+			Kikkit.MinecraftLog.info("        isInGroup: " + ingroup);
+			Kikkit.MinecraftLog.info("        canUseCommand: " + canuse);
+			
+			//if(group.isInGroup(player) && group.canUseCommand(command)) return true;
+			if(ingroup && canuse) return true;
 		}
 		
 		return false;
@@ -124,11 +158,14 @@ public class SecurityManager {
 	}
 	
 	public boolean isInGroup(String playerName, String groupName){
+		//boolean returnValue = false;
 		for(Group group : groups){
 			if(group.getName().equalsIgnoreCase(groupName)){
 				return group.isInGroup(playerName);
 			}
 		}
+		
+		//Kikkit.MinecraftLog.info("isInGroup(" + playerName +", " + groupName + "): " + returnValue);
 		
 		return false;
 	}
@@ -151,6 +188,8 @@ public class SecurityManager {
 		
 		public boolean canUseCommand(String cmd){
 			for(String command : Commands){
+				Kikkit.MinecraftLog.info("            internal command check: " + command);
+				
 				if(command.equalsIgnoreCase(cmd) || command.equalsIgnoreCase(ADMIN_OVERRIDE)) return true;
 			}
 			

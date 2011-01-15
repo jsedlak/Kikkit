@@ -24,13 +24,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Kikkit extends JavaPlugin {
 	public static Kikkit Current = null;
 	public static Logger MinecraftLog = null;				// Used to log stuff
-	public static final String PublicName = "Kikkit";		// Our mod's name
-	public static final String Version = "1.3";				// The version!
 	public static final long UPDATE_INTERVAL = 30000;		// How often the plugin should update itself
 	public static final int MAX_IGNITE_ATTEMPTS = 5;
 	
 	public static String getPluginName(){
-		return PublicName + " v" + Version;
+		return Current.getDescription().getName() + " v" + Current.getDescription().getVersion();
 	}
 	
 	public static String getTimeStampString(Date datetime){
@@ -132,7 +130,11 @@ public class Kikkit extends JavaPlugin {
 	}
 	
 	public boolean canUseCommand(String player, String command){
-		return securityManager.canUseCommand(player, command);
+		boolean returnValue = securityManager.canUseCommand(player, command);
+		
+		MinecraftLog.info(player + " is trying to use " + command + " and result is " + returnValue);
+		
+		return returnValue;
 	}
 	
 	public void broadcast(String msg){
