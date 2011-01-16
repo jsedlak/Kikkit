@@ -1,0 +1,23 @@
+When creating a CommandListener object, the onCommand method needs 
+to follow certain procedures.
+
+public abstract boolean onCommand(
+    PlayerChatEvent event, 
+    String[] cmdData, 
+    Player sourcePlayer
+);
+
+This is distinctly different to how Bukkit handles commands. With
+Bukkit, event.setCancelled(true) is called whenever a command is
+handled.
+
+We want to make the distinction between when a command is actually
+handled and when it errors out. To do this, the method returns a 
+boolean that is TRUE when the workflow should not continue.
+
+Here are a few rules to follow:
+
+When the method knows the command, always return true.
+When the method doesn't understand the command, return false.
+When the method uses the command, run event.setCancelled(true).
+When the method doesn't use the command, ignore event.setCancelled.
