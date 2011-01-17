@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 
 import core.CommandListener;
 import core.Kikkit;
+import core.bukkit.ItemConstants;
 
 public class ItemCommandsListener extends CommandListener {
 
@@ -16,7 +17,7 @@ public class ItemCommandsListener extends CommandListener {
 
 	@Override
 	public boolean onCommand(PlayerChatEvent event, String[] cmdData, Player sourcePlayer) {
-		if(cmdData[0].equalsIgnoreCase("/item")){
+		if(cmdData[0].equalsIgnoreCase("/item") || cmdData[0].equalsIgnoreCase("/i")){
 			if(!canUseCommand(sourcePlayer, "/item")){
 				// Error (want the user to see "Unknown command")
 				return true;
@@ -24,7 +25,9 @@ public class ItemCommandsListener extends CommandListener {
 			
 			// Check for usage question
 			if(cmdData.length >= 2 && cmdData[1].equalsIgnoreCase("?")){
+				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Gives an item to a player.");
 				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] /item <item id> <amount> [player name]");
+				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Shortcuts: /i");
 				
 				setCommandHandled(event, true);
 				return true;
@@ -45,11 +48,41 @@ public class ItemCommandsListener extends CommandListener {
 					ItemStack itemStack = new ItemStack(id, amount);
 					playerToGiveTo.getInventory().addItem(itemStack);
 					
+					sourcePlayer.sendMessage(ChatColor.RED + "Gift given!");
+					if(!sourcePlayer.getName().equalsIgnoreCase(playerToGiveTo.getName())) playerToGiveTo.sendMessage(ChatColor.RED + "Enjoy your gift!");
+					
 					Kikkit.MinecraftLog.info(sourcePlayer.getName() + " gave " + id + " to " + playerToGiveTo.getName());
 					
 					setCommandHandled(event, true);
 					return true;
 				}
+			}
+		}
+		else if(cmdData[0].equalsIgnoreCase("/getid")){
+			if(!canUseCommand(sourcePlayer, "/getid")){
+				// Errror!
+				return true;
+			}
+			
+			if(cmdData.length >= 2 && cmdData[1].equalsIgnoreCase("?")){
+				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Retrieves the internal Id for a Minecraft item.");
+				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] /getid <item name>");
+				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Example: /getid cobblestone");
+				
+				setCommandHandled(event, true);
+				return true;
+			}
+			
+			if(cmdData.length >= 2){
+				int id = ItemConstants.ConvertToId(getLastFromIndex(cmdData, 1));
+				
+				Kikkit.MinecraftLog.info(sourcePlayer.getName() + " is looking for the id of " + getLastFromIndex(cmdData, 1));
+				
+				if(id < 0) sourcePlayer.sendMessage(ChatColor.RED + "Unknown item or material.");
+				else sourcePlayer.sendMessage(ChatColor.RED + "The Id for " + cmdData[1] + " is " + id);
+				
+				setCommandHandled(event, true);
+				return true;
 			}
 		}
 		

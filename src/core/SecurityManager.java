@@ -3,6 +3,8 @@ package core;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.*;
+
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 
@@ -56,23 +58,25 @@ public class SecurityManager {
 				
 				if(data.length < 2) continue;
 				
-				if(data.length == 2){
+				if(data.length >= 2){
 					Group newGroup = new Group(data[0]);
 					
 					groups.add(newGroup);
 					
+					newGroup.setColor(ChatColor.getByCode(Integer.parseInt(data[1])));
+					
 					if(Kikkit.IsDebugging) Kikkit.MinecraftLog.info("    Added group: " + newGroup.getName());
 					
-					String[] commands = data[1].split(",");
-					
-					// TODO: Why must we do a foreach here?
-					// Because java doesn't understand IEnumerable
-					for(String str : commands){
-						if(Kikkit.IsDebugging) Kikkit.MinecraftLog.info("        command: " + str);
-						newGroup.Commands.add(str);
+					if(data.length > 2){
+						String[] commands = data[2].split(",");
+						
+						// TODO: Why must we do a foreach here?
+						// Because java doesn't understand IEnumerable
+						for(String str : commands){
+							if(Kikkit.IsDebugging) Kikkit.MinecraftLog.info("        command: " + str);
+							newGroup.Commands.add(str);
+						}
 					}
-					
-					
 				}
 			}
 		} catch (Exception e) {
@@ -150,6 +154,14 @@ public class SecurityManager {
 		return false;
 	}
 	
+	public Group getGroupForPlayer(String playerName){
+		for(Group group : groups){
+			if(group.isInGroup(playerName)) return group;
+		}
+		
+		return null;
+	}
+	
 	public Group getGroup(String groupName){
 		for(Group g : groups){
 			if(g.getName().equalsIgnoreCase(groupName)) return g;
@@ -179,6 +191,7 @@ public class SecurityManager {
 		public static final String ADMIN_OVERRIDE = "*";
 		
 		private String name;
+		private ChatColor color;
 		
 		public ArrayList<String> Players = new ArrayList<String>();
 		public ArrayList<String> Commands = new ArrayList<String>();
@@ -211,5 +224,8 @@ public class SecurityManager {
 			
 			return false;
 		}
+		
+		public ChatColor getColor() { return color; }
+		public void setColor(ChatColor value) { color = value; }
 	}
 }

@@ -1,11 +1,16 @@
 package core.Listeners;
 
+import java.util.HashMap;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import core.Kikkit;
 import core.Players.*;
+import core.bukkit.ItemConstants;
 import core.CommandListener;
 
 public class EconomyCommandsListener extends CommandListener {
@@ -37,6 +42,123 @@ public class EconomyCommandsListener extends CommandListener {
 			
 			setCommandHandled(event, true);
 			return true;
+		}
+		else if(cmdData[0].equalsIgnoreCase("/getprice") || cmdData[0].equalsIgnoreCase("/gp")){
+			if(!canUseCommand(sourcePlayer, "/getprice")){
+				return true;
+			}
+			
+			if(cmdData.length >= 2 && cmdData[1].equalsIgnoreCase("?")){
+				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Returns the price of an item.");
+				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] /getprice cobblestone");
+				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Shortcuts: /gp");
+				
+				setCommandHandled(event, true);
+				return true;
+			}
+			
+			String itemText = getLastFromIndex(cmdData, 1);
+			int itemId;
+			
+			try{
+				itemId = Integer.parseInt(itemText);
+			}
+			catch(Exception ex){
+				itemId = ItemConstants.ConvertToId(itemText);
+			}
+			
+			// Try one last time
+			if(itemId < 0) itemId = ItemConstants.ConvertToId(itemText);
+			
+			if(itemId < 0){
+				sourcePlayer.sendMessage(ChatColor.RED + "Unknown item.");
+				
+				setCommandHandled(event, true);
+				return true;
+			}
+			
+			// TODO: Custom prices
+			sourcePlayer.sendMessage(ChatColor.RED + "The price is set at 2.");
+			
+			setCommandHandled(event, true);
+			return true;
+		}
+		else if(cmdData[0].equalsIgnoreCase("/sell")){
+			if(!canUseCommand(sourcePlayer, "/sell")){
+				// Error!
+				return true;
+			}
+			
+			if(cmdData.length >= 2 && cmdData[1].equalsIgnoreCase("?")){
+				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Sells an item in your inventory to the market.");
+				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] /sell <amount> <item id, item name>");
+				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Example: /sell 64 cobblestone");
+				
+				setCommandHandled(event, true);
+				return true;
+			}
+			
+			if(cmdData.length >= 3){
+				String itemText = getLastFromIndex(cmdData, 2);
+				int amount;
+				int itemId;
+				
+				try{
+					itemId = Integer.parseInt(itemText);
+				}
+				catch(Exception ex){
+					itemId = ItemConstants.ConvertToId(itemText);
+				}
+				
+				// Try one last time
+				if(itemId < 0) itemId = ItemConstants.ConvertToId(itemText);
+				
+				if(itemId < 0){
+					sourcePlayer.sendMessage(ChatColor.RED + "Unknown item.");
+					
+					setCommandHandled(event, true);
+					return true;
+				}
+				
+				amount = Integer.parseInt(cmdData[1]);
+				
+				if(amount <= 0){
+					sourcePlayer.sendMessage(ChatColor.RED + "Invalid amount.");
+					
+					setCommandHandled(event, true);
+					return true;
+				}
+				else if(amount > 64) amount = 64;
+				
+				sourcePlayer.sendMessage(ChatColor.RED + "This isn't finished yet.");
+				
+				ItemStack itemStack = new ItemStack(itemId, amount);
+				
+				PlayerInventory inv = sourcePlayer.getInventory();
+				
+				// Try to remove the items
+				HashMap<Integer, ItemStack> returnedHash = inv.removeItem(itemStack);
+		
+				for(Integer i : returnedHash.keySet()){
+					//sourcePlayer.sendMessage(ChatColor.DARK_PURPLE + i.toString() + ": " + returnedHash.get(i).getType().name() + "(" + returnedHash.get(i).getAmount() + ")");
+					ItemStack returnedStack = returnedHash.get(i);
+					
+					if(returnedStack.getTypeId() == itemId){
+						amount -= returnedStack.getAmount();
+					}
+				}
+				
+				PlayerData playerData = getPlugin().getPlayerManager().get(sourcePlayer.getName());
+
+				// TODO: Custom prices
+				playerData.setCredits(playerData.getCredits() + amount * 2);
+
+				sourcePlayer.sendMessage(ChatColor.RED + "Sold " + amount + " at a price of 2c");
+				
+				setCommandHandled(event, true);
+				return true;
+			}
+			
 		}
 		
 		return false;

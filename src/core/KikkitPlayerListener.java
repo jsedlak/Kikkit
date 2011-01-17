@@ -41,8 +41,10 @@ public class KikkitPlayerListener extends PlayerListener {
 		Player player = event.getPlayer();
 		String msg = event.getMessage();
 		
-		if(plugin.getSecurityManager().isInGroup(player, Groups.Admin)){			
-			String playerText = "<" + ChatColor.RED + event.getPlayer().getName() + ChatColor.WHITE + "> ";
+		SecurityManager.Group group = plugin.getSecurityManager().getGroupForPlayer(player.getName());
+		
+		if(group != null){			
+			String playerText = "<" + group.getColor() + event.getPlayer().getName() + ChatColor.WHITE + "> ";
 			
 			Kikkit.MinecraftLog.info("<" + player.getName() + "> " + msg);
 			

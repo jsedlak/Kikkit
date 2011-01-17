@@ -30,4 +30,17 @@ public abstract class CommandListener {
 			event.setCancelled(true);
 		}
 	}
+	
+	protected String getLastFromIndex(String[] data, int startIndex){
+		if(startIndex > data.length - 1) return "";
+		
+		String returnString = "";
+		for(int k = startIndex; k < data.length; k++){
+			returnString += data[k];
+			
+			if(k < data.length - 1) returnString += " ";
+		}
+		
+		return returnString;
+	}
 }

@@ -38,7 +38,7 @@ public class GeneralCommandsListener extends CommandListener {
     		setCommandHandled(event, true);
     		return true;
     	}
-    	else if(cmdData[0].equalsIgnoreCase("/msg")){
+    	else if(cmdData[0].equalsIgnoreCase("/msg") || cmdData[0].equalsIgnoreCase("/m")){
     		if(!canUseCommand(sourcePlayer, "/msg")){
     			// Error!
     			return true;
@@ -46,7 +46,9 @@ public class GeneralCommandsListener extends CommandListener {
     		
     		// Usage case
     		if(cmdData.length <= 2 || (cmdData.length >= 2 && cmdData[1].equalsIgnoreCase("?"))){
+    			sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Sends a private message to a player.");
     			sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] /msg <player name> <message>");
+    			sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Shortcuts: /m");
     			
     			setCommandHandled(event, true);
     			return true;
@@ -58,7 +60,10 @@ public class GeneralCommandsListener extends CommandListener {
 			for(int k = 2; k < cmdData.length; k++)
 				message += cmdData[k] + " ";
     		
-    		if(playerToMsg != null) playerToMsg.sendMessage("[" + sourcePlayer.getName() + "]" + message);
+    		if(playerToMsg != null){
+    			playerToMsg.sendMessage(ChatColor.AQUA + "[" + sourcePlayer.getName() + "]" + message);
+    			sourcePlayer.sendMessage(ChatColor.AQUA + "[" + sourcePlayer.getName() + "]" + message);
+    		}
     		else sourcePlayer.sendMessage(ChatColor.RED + "Can't find player " + cmdData[1]);
     		
     		setCommandHandled(event, true);
