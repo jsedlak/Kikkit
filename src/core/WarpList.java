@@ -114,7 +114,16 @@ public class WarpList {
 	}
 	
 	public WarpPoint[] toArray(){
-		return warps.toArray(new WarpPoint[warps.size()]);
+		if(warps == null || warps.size() == 0) return new WarpPoint[0];
+		
+		// TODO: Does this code work?
+		//return warps.toArray(new WarpPoint[warps.size()]);
+		
+		WarpPoint[] returnValue = new WarpPoint[warps.size()];
+		
+		for(int i = 0; i < warps.size(); i++) returnValue[i] = warps.get(i);
+		
+		return returnValue;
 	}
 	
 	public class WarpPoint {

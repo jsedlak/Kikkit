@@ -120,12 +120,22 @@ public class PublicWarpCommandsListener extends CommandListener {
     			return true;
     		}
     		
-    		if(cmdData.length > 1 && cmdData[1].equalsIgnoreCase("?")){
+    		if(cmdData.length >= 2 && cmdData[1].equalsIgnoreCase("?")){
+    			sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Returns a list of warps.");
     			sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] /warplist");
+    			sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Alternatives: /listwarps");
     		}
     		else{
     			WarpList list = getPlugin().getServerModWarps();
     			WarpList.WarpPoint[] array = list.toArray();
+    			
+    			// Check for the empty case
+    			if(array == null || array.length == 0){
+    				sourcePlayer.sendMessage(ChatColor.GRAY + "No warps have been created to speak of.");
+    				
+    				setCommandHandled(event, true);
+    				return true;
+    			}
     			
     			String str = "";
     			for(int k = 0; k < array.length; k++){
