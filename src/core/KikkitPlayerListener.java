@@ -25,6 +25,7 @@ public class KikkitPlayerListener extends PlayerListener {
 		listeners.add(new PublicWarpCommandsListener(plugin));
 		listeners.add(new TeleportCommandsListener(plugin));
 		listeners.add(new WhitelistCommandsListener(plugin));
+		listeners.add(new EconomyCommandsListener(plugin));
 	}
 	
 	/*
