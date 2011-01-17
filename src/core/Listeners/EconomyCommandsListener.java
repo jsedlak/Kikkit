@@ -120,7 +120,16 @@ public class EconomyCommandsListener extends CommandListener {
 					return true;
 				}
 				
-				amount = Integer.parseInt(cmdData[1]);
+				try{
+					amount = Integer.parseInt(cmdData[1]);
+				}
+				catch(NumberFormatException nfe){
+					sourcePlayer.sendMessage(ChatColor.RED + "Couldn't parse the amount. Did you mean /sell " + cmdData[2] + " " + cmdData[1] + "?");
+					sourcePlayer.sendMessage(ChatColor.RED + "For more information: /sell ?");
+					
+					setCommandHandled(event, true);
+					return true;
+				}
 				
 				if(amount <= 0){
 					sourcePlayer.sendMessage(ChatColor.RED + "Invalid amount.");
