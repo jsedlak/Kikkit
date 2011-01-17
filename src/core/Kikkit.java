@@ -16,6 +16,7 @@ import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import core.Economy.*;
 import core.Players.PlayerManager;
 
 /*
@@ -66,6 +67,8 @@ public class Kikkit extends JavaPlugin {
 	
 	private SecurityManager securityManager;
 	private PlayerManager playerManager;
+	
+	private Market currentMarket;
 	
 	Timer updateTimer;
 	
@@ -118,6 +121,7 @@ public class Kikkit extends JavaPlugin {
 		homeWarpList = new WarpList("player-homes.txt");
 		hModWarpList = new WarpList("warps.txt");
 		playerManager = new PlayerManager();
+		currentMarket = new Market(this);
 		
 		// HOOK! Wasn't that a movie? Anyways, attach some event handlers (I'm a C#er, okay?)
 		PluginManager pm = getServer().getPluginManager();
@@ -228,6 +232,8 @@ public class Kikkit extends JavaPlugin {
 	public PlayerManager getPlayerManager(){
 		return playerManager;
 	}
+	
+	public Market getMarket(){ return currentMarket; }
 	
 	/*
 	public boolean getIsWhitelistEnabled(){ 
