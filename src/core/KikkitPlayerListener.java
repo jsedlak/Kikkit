@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
-import core.Listeners.*;
+import core.listeners.*;
 import core.bukkit.ItemConstants;
 
 public class KikkitPlayerListener extends PlayerListener {
@@ -26,6 +26,7 @@ public class KikkitPlayerListener extends PlayerListener {
 		listeners.add(new TeleportCommandsListener(plugin));
 		listeners.add(new WhitelistCommandsListener(plugin));
 		listeners.add(new EconomyCommandsListener(plugin));
+		listeners.add(new ChatCommandsListener(plugin));
 	}
 	
 	/*

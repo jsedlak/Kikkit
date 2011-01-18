@@ -1,4 +1,4 @@
-package core.Listeners;
+package core.listeners;
 
 import java.util.HashMap;
 
@@ -9,10 +9,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import core.Kikkit;
-import core.Economy.Market;
-import core.Economy.MarketedGood;
-import core.Players.*;
-import core.bukkit.ItemConstants;
+import core.economy.*;
+import core.players.*;
+import core.bukkit.*;
 import core.CommandListener;
 
 public class EconomyCommandsListener extends CommandListener {
@@ -80,7 +79,7 @@ public class EconomyCommandsListener extends CommandListener {
 			}
 			
 			// TODO: Custom prices
-			sourcePlayer.sendMessage(ChatColor.RED + "The price is set at " + getPlugin().getMarket().getGoods(itemId).getBuyPrice() + ".");
+			sourcePlayer.sendMessage(ChatColor.RED + "The price is set at " + getPlugin().getMarket().getGoods(itemId).getSellPrice() + ".");
 			
 			setCommandHandled(event, true);
 			return true;
@@ -162,7 +161,7 @@ public class EconomyCommandsListener extends CommandListener {
 				Market market = getPlugin().getMarket();
 				MarketedGood goods = market.getGoods(itemId);
 				
-				int price = goods.getBuyPrice();
+				int price = goods.getSellPrice();
 				int amountSold = goods.sell(price, amount);
 				
 				// Return unsold items
@@ -174,9 +173,9 @@ public class EconomyCommandsListener extends CommandListener {
 				PlayerData playerData = getPlugin().getPlayerManager().get(sourcePlayer.getName());
 
 				// TODO: Custom prices
-				playerData.setCredits(playerData.getCredits() + amount * price);
+				playerData.setCredits(playerData.getCredits() + amountSold * price);
 
-				sourcePlayer.sendMessage(ChatColor.RED + "Sold " + amount + " at a price of 2c");
+				sourcePlayer.sendMessage(ChatColor.RED + "Sold " + amountSold + " at a price of 2c");
 				
 				setCommandHandled(event, true);
 				return true;

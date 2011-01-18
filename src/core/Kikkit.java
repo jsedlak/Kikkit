@@ -16,8 +16,8 @@ import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import core.Economy.*;
-import core.Players.PlayerManager;
+import core.economy.*;
+import core.players.PlayerManager;
 
 /*
  * Kikkit
@@ -173,11 +173,11 @@ public class Kikkit extends JavaPlugin {
 		if(current != tempWhitelist.getIsEnabled()){
 			if(tempWhitelist.getIsEnabled()){
 				MinecraftLog.info("Enabling whitelist temporarily.");
-				//broadcast(Colors.Purple + "Server entered a whiteout until (at least) " + getTimeStampString(tempWhitelist.getCurrentPeriod().End) + ".");
+				broadcast(ChatColor.DARK_PURPLE + "Server entered a whiteout until (at least) " + getTimeStampString(tempWhitelist.getCurrentPeriod().End) + ".");
 			}
 			else {
 				MinecraftLog.info("Disabling whitelist temporarily.");
-				//broadcast(Colors.Purple + "The server has exited a whiteout.");
+				broadcast(ChatColor.DARK_PURPLE + "The server has exited a whiteout.");
 			}
 		}
 	}

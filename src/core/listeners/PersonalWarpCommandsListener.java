@@ -1,4 +1,4 @@
-package core.Listeners;
+package core.listeners;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

@@ -1,4 +1,4 @@
-package core.Economy;
+package core.economy;
 
 public class MarketedGood {
 	private int itemId;
@@ -18,7 +18,7 @@ public class MarketedGood {
 	}
 	
 	public int sell(int amount){
-		return sell(getBuyPrice(), amount);
+		return sell(getSellPrice(), amount);
 	}
 	
 	public int sell(int price, int amount){
@@ -34,7 +34,7 @@ public class MarketedGood {
 	}
 	
 	public int buy(int amount){
-		return buy(getSellPrice(), amount);
+		return buy(getBuyPrice(), amount);
 	}
 	
 	public int buy(int price, int amount){
