@@ -138,7 +138,7 @@ FileWriter outputFile;
 	private void loadForFirstRun(){
 		for(Material material : Material.values()){
 			goods.add(
-					new MarketedGood(this, material.getId(), 1, 2, 25)
+					new MarketedGood(this, material.getId(), 200, 2, 25)
 			);
 		}
 	}

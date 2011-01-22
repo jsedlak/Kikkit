@@ -28,6 +28,7 @@ public class PlayerManager {
 		
 		event.getPlayer().sendMessage(ChatColor.GREEN + "Balance: " + data.getCredits() + " " + plugin.getMarket().getCurrencyName());
 		event.getPlayer().sendMessage(ChatColor.GREEN + "Hours Logged: " + data.getHours() + " hours");
+		event.getPlayer().sendMessage(ChatColor.GREEN + "Consecutive Days: " + data.getConsecutiveDays() + " days");
 	}
 	
 	public void onPlayerQuit(PlayerEvent event){

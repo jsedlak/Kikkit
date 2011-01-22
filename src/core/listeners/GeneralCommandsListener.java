@@ -61,8 +61,8 @@ public class GeneralCommandsListener extends CommandListener {
 				message += cmdData[k] + " ";
     		
     		if(playerToMsg != null){
-    			playerToMsg.sendMessage(ChatColor.AQUA + "[" + sourcePlayer.getName() + "]" + message);
-    			sourcePlayer.sendMessage(ChatColor.AQUA + "[" + sourcePlayer.getName() + "]" + message);
+    			playerToMsg.sendMessage(ChatColor.AQUA + "[" + sourcePlayer.getName() + "] " + message);
+    			sourcePlayer.sendMessage(ChatColor.AQUA + "[" + sourcePlayer.getName() + "] " + "(" + playerToMsg.getName() + ") " + message);
     		}
     		else sourcePlayer.sendMessage(ChatColor.RED + "Can't find player " + cmdData[1]);
     		

@@ -57,6 +57,47 @@ public class TeleportCommandsListener extends CommandListener {
 				return true;
 			};
 		}
+		else if(cmdData[0].equalsIgnoreCase("/tphere") || cmdData[0].equalsIgnoreCase("/tph")){
+    		if(!canUseCommand(sourcePlayer, "/tphere")){
+    			// Error!
+    			return true;
+    		}
+    		
+    		if(cmdData.length >= 2 && cmdData[1].equalsIgnoreCase("?")){
+    			sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Teleports a player to your location.");
+				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] <source player>");
+				
+				setCommandHandled(event, true);
+				return true;
+			}
+    		
+    		if(cmdData.length >= 2){
+    			Player source = getServer().getPlayer(cmdData[1]);
+				Player destination = sourcePlayer;
+    			
+    			if(source != null && destination != null){
+    				if(source.getName().equalsIgnoreCase(destination.getName())){
+    					getPlugin().broadcast(ChatColor.RED + sourcePlayer.getName() + " tried to teleport their self to their self.");
+    					
+    					setCommandHandled(event, true);
+    					return true;
+    				}
+    				
+    				source.teleportTo(destination);
+    				
+    				source.sendMessage(ChatColor.RED + "Telepooooorsh!");
+    				sourcePlayer.sendMessage(ChatColor.RED + "Teleported player.");
+    				
+    				Kikkit.MinecraftLog.info(sourcePlayer.getName() + " made " + source.getName() + " teleport to " + destination.getName());
+    			}
+    			else if(source == null){
+    				sourcePlayer.sendMessage(ChatColor.RED + "Unknown player.");
+    			}
+    			
+    			setCommandHandled(event, true);
+    			return true;
+			}
+    	}
 		else if(cmdData[0].equalsIgnoreCase("/tp")){
     		if(!canUseCommand(sourcePlayer, "/tp")){
     			// Error!

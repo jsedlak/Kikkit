@@ -1,8 +1,11 @@
 package core.economy;
 
+// EVERYTHING IS FROM THE PLAYER'S PERSPECTIVE
+// SELL = player to market
+// BUY  = market to player
 public class MarketedGood {
 	private int itemId;
-	private int currentBuyPrice = 1;
+	private int currentBuyPrice = 2;
 	private int currentSellPrice = 1;
 	private long amountInBin = 0;
 	
@@ -22,11 +25,16 @@ public class MarketedGood {
 	}
 	
 	public int sell(int price, int amount){
-		if(!willBuyAt(price)){
+		if(!willSellAt(price)){
 			return 0;
 		}
 		
 		amountInBin += amount;
+		
+		currentSellPrice -= 2;
+		currentBuyPrice -= 1;
+		if(currentSellPrice <= 0) currentSellPrice = 1;
+		if(currentBuyPrice <= 0) currentBuyPrice = 1;
 		
 		getMarket().save();
 		
@@ -38,7 +46,7 @@ public class MarketedGood {
 	}
 	
 	public int buy(int price, int amount){
-		if(!willSellAt(price)){
+		if(!willBuyAt(price)){
 			return 0;
 		}
 		
@@ -50,17 +58,20 @@ public class MarketedGood {
 		
 		amountInBin -= sold;
 		
+		currentSellPrice += 1;
+		currentBuyPrice += 3;
+		
 		getMarket().save();
 		
 		return sold;
 	}
 	
 	public boolean willBuyAt(int price){
-		return price <= getSellPrice();
+		return price <= getBuyPrice();
 	}
 	
 	public boolean willSellAt(int price){
-		return price >= getBuyPrice();
+		return price >= getSellPrice();
 	}
 	
 	public int getId() { return itemId; }
