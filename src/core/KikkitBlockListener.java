@@ -5,6 +5,8 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.*;
 
+import core.bukkit.ItemConstants;
+
 
 public class KikkitBlockListener extends BlockListener {
 	private Kikkit plugin;
@@ -18,10 +20,53 @@ public class KikkitBlockListener extends BlockListener {
 	
 	@Override
     public void onBlockCanBuild(BlockCanBuildEvent event) {
+		//Kikkit.MinecraftLog.info("onBlockCanBuild");
+		
+		//Player player = event.getPlayer();
+		
+		if(event.getMaterialId() == ItemConstants.TntId || event.getBlock().getTypeId() == ItemConstants.TntId){
+			/*if(!plugin.canPlayerIgnite(player)){
+				plugin.broadcast(ChatColor.RED + player.getName() + " has tried placing TNT, but has been blocked!");
+				Kikkit.MinecraftLog.info(player.getName() + " has tried to use TNT.");
+				
+				if(igniteKickCounter.checkAndSet(player.getName()) >= Kikkit.MAX_IGNITE_ATTEMPTS){
+					player.kickPlayer("You have been kicked for attempting to grief.");
+					plugin.broadcast(ChatColor.DARK_PURPLE + player.getName() + " has been kicked for trying to use TNT.");
+				}
+				
+				event.setCancelled(true);
+			}*/
+			Kikkit.MinecraftLog.info("Someone has tried to use TNT.");
+			plugin.broadcast(ChatColor.RED + "Someone has tried placing TNT, but has been blocked!");
+			event.setBuildable(false);
+		}
     }
 	
 	@Override
+	public void onBlockPlace(BlockPlaceEvent event){
+		//Kikkit.MinecraftLog.info("onBlockCanPlace");
+		
+		Player player = event.getPlayer();
+		
+		if(event.getBlockPlaced().getTypeId() == ItemConstants.TntId || event.getBlock().getTypeId() == ItemConstants.TntId){
+			if(!plugin.canPlayerIgnite(player)){
+				plugin.broadcast(ChatColor.RED + player.getName() + " has tried placing TNT, but has been blocked!");
+				Kikkit.MinecraftLog.info(player.getName() + " has tried to use TNT.");
+				
+				if(igniteKickCounter.checkAndSet(player.getName()) >= Kikkit.MAX_IGNITE_ATTEMPTS){
+					player.kickPlayer("You have been kicked for attempting to grief.");
+					plugin.broadcast(ChatColor.DARK_PURPLE + player.getName() + " has been kicked for trying to use TNT.");
+				}
+				
+				event.setCancelled(true);
+			}
+		}
+	}
+	
+	@Override
 	public void onBlockIgnite(BlockIgniteEvent event){
+		if(event.isCancelled()) return;
+		
 		Block block = event.getBlock();
 		Player player = event.getPlayer();
 		

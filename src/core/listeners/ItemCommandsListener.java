@@ -33,8 +33,8 @@ public class ItemCommandsListener extends CommandListener {
 				return true;
 			}
 			
-			// /item <id> <amount> [player] = 4
-			if(cmdData.length >= 3){
+			// /item <id> [amount] [player] = 4
+			if(cmdData.length >= 2){
 				// Get the player
 				Player playerToGiveTo = sourcePlayer;
 				
@@ -42,7 +42,10 @@ public class ItemCommandsListener extends CommandListener {
 				if(cmdData.length >= 4) playerToGiveTo = getServer().getPlayer(cmdData[3]);
 				
 				int id = Integer.parseInt(cmdData[1]);
-				int amount = Integer.parseInt(cmdData[2]);
+				int amount = 1;
+				
+				// Amount
+				if(cmdData.length > 2) amount = Integer.parseInt(cmdData[2]);
 				
 				if(playerToGiveTo != null){
 					ItemStack itemStack = new ItemStack(id, amount);

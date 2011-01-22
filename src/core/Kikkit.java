@@ -32,7 +32,6 @@ public class Kikkit extends JavaPlugin {
 	public static Logger MinecraftLog = null;				// Used to log stuff
 	public static boolean IsDebugging = false;
 	
-	public static final long UPDATE_INTERVAL = 30000;		// How often the plugin should update itself
 	public static final int MAX_IGNITE_ATTEMPTS = 5;
 	public static final int DAY = 0;
 	public static final int NIGHT = 13500;
@@ -129,17 +128,14 @@ public class Kikkit extends JavaPlugin {
 		pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Normal, this);
 		pm.registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
 		pm.registerEvent(Event.Type.BLOCK_CANBUILD, blockListener, Priority.Normal, this);
+		pm.registerEvent(Event.Type.BLOCK_PLACED, playerListener, Priority.Normal, this);
 		pm.registerEvent(Event.Type.BLOCK_IGNITE, blockListener, Priority.Normal, this);
 		pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.Normal, this);
-		/*etc.getLoader().addListener(PluginLoader.Hook.COMMAND, emListener, this, PluginListener.Priority.MEDIUM);
-		etc.getLoader().addListener(PluginLoader.Hook.IGNITE, emListener, this, PluginListener.Priority.MEDIUM);
-		etc.getLoader().addListener(PluginLoader.Hook.LOGIN, emListener, this, PluginListener.Priority.MEDIUM);
-		etc.getLoader().addListener(PluginLoader.Hook.ITEM_USE, emListener, this, PluginListener.Priority.MEDIUM);*/
-		
+		pm.registerEvent(Event.Type.PLAYER_MOVE, new KikkitUpdater(this), Priority.Normal, this);
 		
 		// Setup a timer so that the update method gets called (and call it)
-		updateTimer = new Timer();
-		updateTimer.schedule(new KikkitUpdater(this), 0, UPDATE_INTERVAL);
+		//updateTimer = new Timer();
+		//updateTimer.schedule(new KikkitUpdater(this), 0, UPDATE_INTERVAL);
 		
 		broadcast(ChatColor.DARK_PURPLE + getPluginName() + " has been initialized.");
 	}
@@ -166,6 +162,8 @@ public class Kikkit extends JavaPlugin {
 	 * Updates the plugin periodically.
 	 */
 	public void update(){
+		//MinecraftLog.info("UPDATED KIKKIT");
+		
 		boolean current = tempWhitelist.getIsEnabled();
 		
 		tempWhitelist.update();

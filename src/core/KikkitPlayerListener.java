@@ -39,6 +39,8 @@ public class KikkitPlayerListener extends PlayerListener {
 	*/
 	
 	public void onPlayerChat(PlayerChatEvent event){
+		if(event.isCancelled()) return;
+		
 		Player player = event.getPlayer();
 		String msg = event.getMessage();
 		
@@ -57,6 +59,8 @@ public class KikkitPlayerListener extends PlayerListener {
 	}
 	
 	public void onPlayerItem(PlayerItemEvent event){
+		if(event.isCancelled()) return;
+		
 		ItemStack item = event.getItem();
 		Player player = event.getPlayer();
 		
@@ -127,6 +131,8 @@ public class KikkitPlayerListener extends PlayerListener {
 
     @Override
     public void onPlayerCommand(PlayerChatEvent event) {
+    	if(event.isCancelled()) return;
+    	
     	String[] split = event.getMessage().split(" ");
     	Player player = event.getPlayer();
     	

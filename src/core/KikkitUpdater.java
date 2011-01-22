@@ -1,19 +1,28 @@
 package core;
-import java.util.TimerTask;
 
+import java.util.Date;
+import org.bukkit.event.player.*;
 
-
-public class KikkitUpdater extends TimerTask {
-
-	private Kikkit plugin;
+public class KikkitUpdater extends PlayerListener {
+	// How often the plugin should update
+	public static final long UPDATE_INTERVAL = 30000;
 	
-	public KikkitUpdater(Kikkit plugin){
-		this.plugin = plugin;
+	private Kikkit plugin;
+	private Date lastCheck;
+	
+	public KikkitUpdater(Kikkit kikkitPlugin){
+		plugin = kikkitPlugin;
+		lastCheck = new Date();
 	}
 	
 	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		plugin.update();
+	public void onPlayerMove(PlayerMoveEvent event){
+		Date newCheck = new Date();
+		
+		long diff = newCheck.getTime() - lastCheck.getTime();
+		if(diff > UPDATE_INTERVAL){
+			lastCheck = newCheck;
+			plugin.update();
+		}
 	}
 }

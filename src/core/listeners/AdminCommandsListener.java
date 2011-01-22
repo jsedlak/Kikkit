@@ -91,6 +91,43 @@ public class AdminCommandsListener extends CommandListener {
 	    		return true;
     		}
     	}
+    	else if(cmdData[0].equalsIgnoreCase("/murder") || cmdData[0].equalsIgnoreCase("/kill")){
+    		if(!canUseCommand(sourcePlayer, "/murder")){
+    			return true;
+    		}
+    		
+    		if(cmdData.length >= 2 && cmdData[1].equalsIgnoreCase("?")){
+				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Kills a player.");
+				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] /murder [target player]");
+				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Synonyms: /kill");
+				
+				setCommandHandled(event, true);
+				return true;
+    		}
+    		
+    		if(cmdData.length < 2){
+    			sourcePlayer.sendMessage(ChatColor.RED + "Unknown player.");
+    			
+    			setCommandHandled(event, true);
+    			return true;
+    		}
+    		
+    		Player target = getServer().getPlayer(cmdData[1]);
+    		
+    		if(target == null){
+				sourcePlayer.sendMessage(ChatColor.RED + "Unknown player.");
+    			
+    			setCommandHandled(event, true);
+    			return true;
+    		}
+    		
+    		target.setHealth(0);
+    		
+    		sourcePlayer.sendMessage(ChatColor.RED + "You have killed " + target.getName());
+    		
+    		setCommandHandled(event, true);
+			return true;
+    	}
     	else if(cmdData[0].equalsIgnoreCase("/clearinventory") || cmdData[0].equalsIgnoreCase("/ci")){
     		if(!canUseCommand(sourcePlayer, "/clearinventory")){
     			// Error!
