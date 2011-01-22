@@ -20,6 +20,7 @@ public class Market {
 	
 	private String filename;
 	private Kikkit plugin;
+	private String currencyName = "kredits";
 	
 	private ArrayList<MarketedGood> goods = new ArrayList<MarketedGood>();
 	
@@ -35,6 +36,10 @@ public class Market {
 	
 	private void load(String filename){
 		this.filename = filename; 
+		
+		GenericConfig gc = plugin.getConfig();
+		if(gc != null && gc.hasKey("currencyName"))
+			currencyName = gc.getValue("currencyName");
 		
 		goods.clear();
 		
@@ -140,4 +145,6 @@ FileWriter outputFile;
 	
 	protected Kikkit getPlugin(){ return plugin; }
 	protected Server getServer(){ return plugin.getServer(); }
+	
+	public String getCurrencyName() { return currencyName; }
 }

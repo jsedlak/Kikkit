@@ -113,13 +113,13 @@ public class Kikkit extends JavaPlugin {
 	
 		// Load the configuration, and the whitelist files.
 		securityManager = new SecurityManager();
-		genConfig = new GenericConfig("config/em.config");
-		tempWhitelist = new TemporaryWhitelist("config/em-whitelist.txt", genConfig, "wl-");
-		fireWhitelist = new Whitelist("config/em-fire.txt");
-		secretWarpList = new WarpList();
+		genConfig = new GenericConfig("config/kikkit.config");
+		tempWhitelist = new TemporaryWhitelist("config/kikkit-whitelist.txt", genConfig, "wl-");
+		fireWhitelist = new Whitelist("config/kikkit-fire.txt");
+		secretWarpList = new WarpList("secret-warps.txt");
 		homeWarpList = new WarpList("player-homes.txt");
 		hModWarpList = new WarpList("warps.txt");
-		playerManager = new PlayerManager();
+		playerManager = new PlayerManager(this);
 		currentMarket = new Market(this);
 		
 		// HOOK! Wasn't that a movie? Anyways, attach some event handlers (I'm a C#er, okay?)
@@ -217,6 +217,10 @@ public class Kikkit extends JavaPlugin {
 	
 	public WarpList getServerModWarps(){
 		return hModWarpList;
+	}
+	
+	public GenericConfig getConfig(){
+		return genConfig;
 	}
 	
 	public KickCounter getIgnitionKickCounter(){

@@ -42,7 +42,7 @@ public class ChatCommandsListener extends CommandListener {
 				
 				for(Player player : players){
 					if(canUseCommand(player, "/a")){
-						player.sendMessage(ChatColor.GOLD + "[" + sourcePlayer.getName() + "] " + getLastFromIndex(cmdData, 1));
+						player.sendMessage(ChatColor.DARK_RED + "[" + sourcePlayer.getName() + "] " + getLastFromIndex(cmdData, 1));
 					}
 				}
 			}

@@ -39,7 +39,7 @@ public class EconomyCommandsListener extends CommandListener {
 			PlayerManager pm = getPlugin().getPlayerManager();
 			PlayerData pd = pm.get(sourcePlayer.getName());
 			
-			sourcePlayer.sendMessage(ChatColor.GREEN + "Your balance is " + pd.getCredits() + " kredits.");
+			sourcePlayer.sendMessage(ChatColor.GREEN + "Your balance is " + pd.getCredits() + " " + getMarket().getCurrencyName() + ".");
 			
 			setCommandHandled(event, true);
 			return true;
@@ -79,7 +79,7 @@ public class EconomyCommandsListener extends CommandListener {
 			}
 			
 			// TODO: Custom prices
-			sourcePlayer.sendMessage(ChatColor.RED + "The price is set at " + getPlugin().getMarket().getGoods(itemId).getSellPrice() + ".");
+			sourcePlayer.sendMessage(ChatColor.RED + "The price is set at " + getPlugin().getMarket().getGoods(itemId).getSellPrice() + " " + getMarket().getCurrencyName() + ".");
 			
 			setCommandHandled(event, true);
 			return true;
@@ -140,7 +140,7 @@ public class EconomyCommandsListener extends CommandListener {
 				}
 				else if(amount > 64) amount = 64;
 				
-				sourcePlayer.sendMessage(ChatColor.RED + "This isn't finished yet.");
+				//sourcePlayer.sendMessage(ChatColor.RED + "This isn't finished yet.");
 				
 				ItemStack itemStack = new ItemStack(itemId, amount);
 				
@@ -175,7 +175,7 @@ public class EconomyCommandsListener extends CommandListener {
 				// TODO: Custom prices
 				playerData.setCredits(playerData.getCredits() + amountSold * price);
 
-				sourcePlayer.sendMessage(ChatColor.RED + "Sold " + amountSold + " at a price of 2c");
+				sourcePlayer.sendMessage(ChatColor.RED + "Sold " + amountSold + " at a price of " + price + " " + getMarket().getCurrencyName());
 				
 				setCommandHandled(event, true);
 				return true;
@@ -184,6 +184,10 @@ public class EconomyCommandsListener extends CommandListener {
 		}
 		
 		return false;
+	}
+	
+	private Market getMarket(){
+		return getPlugin().getMarket();
 	}
 
 }

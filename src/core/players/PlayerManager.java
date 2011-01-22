@@ -5,8 +5,15 @@ import java.util.ArrayList;
 import org.bukkit.ChatColor;
 import org.bukkit.event.player.PlayerEvent;
 
+import core.Kikkit;
+
 public class PlayerManager {
 	private ArrayList<PlayerData> playerData = new ArrayList<PlayerData>();
+	private Kikkit plugin;
+	
+	public PlayerManager(Kikkit kikkitPlugin){
+		plugin = kikkitPlugin;
+	}
 	
 	public void onPlayerJoin(PlayerEvent event){
 		PlayerData data = get(event.getPlayer().getName());
@@ -19,7 +26,7 @@ public class PlayerManager {
 		
 		data.loggedOn();
 		
-		event.getPlayer().sendMessage(ChatColor.GREEN + "Balance: " + data.getCredits() + " kredits");
+		event.getPlayer().sendMessage(ChatColor.GREEN + "Balance: " + data.getCredits() + " " + plugin.getMarket().getCurrencyName());
 		event.getPlayer().sendMessage(ChatColor.GREEN + "Hours Logged: " + data.getHours() + " hours");
 	}
 	
