@@ -21,6 +21,7 @@ public class Market {
 	private String filename;
 	private Kikkit plugin;
 	private String currencyName = "kredits";
+	private ArrayList<Integer> bannedItemIds = new ArrayList<Integer>();
 	
 	private ArrayList<MarketedGood> goods = new ArrayList<MarketedGood>();
 	
@@ -58,6 +59,20 @@ public class Market {
 			while(scanner.hasNextLine()){
 				data = scanner.nextLine();
 				
+				if(data.startsWith("bannedIds=")){
+					String[] idSplit = data.substring("bannedIds=".length()).split(",");
+					
+					bannedItemIds.clear();
+					for(String idString : idSplit){
+						try{
+							int id = Integer.parseInt(idString);
+							
+							bannedItemIds.add(id);
+						}catch(Exception ex){}
+					}
+					continue;
+				}
+				
 				String[] split = data.split(",");
 				
 				MarketedGood good = loadGood(data, split);
@@ -79,10 +94,17 @@ public class Market {
 	}
 	
 	public void save(){
-FileWriter outputFile;
+		FileWriter outputFile;
 		
 		try {		
 			outputFile = new FileWriter(filename, false);
+			
+			outputFile.write("bannedIds=");
+			for(int i = 0; i < bannedItemIds.size(); i++){
+				outputFile.write(bannedItemIds.get(i));
+				if(i < bannedItemIds.size() - 1) outputFile.write(",");
+			}
+			outputFile.write("\n");
 			
 			for(MarketedGood good : goods){
 				outputFile.write(saveGood(good) + "\n");
@@ -100,6 +122,10 @@ FileWriter outputFile;
 	}
 	
 	public MarketedGood getGoods(int id){
+		if(bannedItemIds.contains(id)){
+			return null;
+		}
+		
 		for(int i = 0; i < goods.size(); i++){
 			MarketedGood good = goods.get(i);
 			
@@ -138,7 +164,7 @@ FileWriter outputFile;
 	private void loadForFirstRun(){
 		for(Material material : Material.values()){
 			goods.add(
-					new MarketedGood(this, material.getId(), 200, 2, 25)
+					new MarketedGood(this, material.getId(), 200, 200, 5)
 			);
 		}
 	}

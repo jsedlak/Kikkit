@@ -3,6 +3,7 @@ package core.players;
 import java.util.ArrayList;
 
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerEvent;
 
 import core.Kikkit;
@@ -16,17 +17,22 @@ public class PlayerManager {
 	}
 	
 	public void onPlayerJoin(PlayerEvent event){
-		PlayerData data = get(event.getPlayer().getName());
+		Player player = event.getPlayer();
+		String playerName = player.getName();
+		
+		PlayerData data = get(playerName);
 		
 		if(data == null){
-			data = new PlayerData(event.getPlayer().getName());
+			data = new PlayerData(playerName);
 			
 			playerData.add(data);
 		}
 		
 		data.loggedOn();
 		
-		event.getPlayer().sendMessage(ChatColor.GREEN + "Balance: " + data.getCredits() + " " + plugin.getMarket().getCurrencyName());
+		if(plugin.canUseCommand(player, "/balance"))
+			event.getPlayer().sendMessage(ChatColor.GREEN + "Balance: " + data.getCredits() + " " + plugin.getMarket().getCurrencyName());
+		
 		event.getPlayer().sendMessage(ChatColor.GREEN + "Hours Logged: " + data.getHours() + " hours");
 		event.getPlayer().sendMessage(ChatColor.GREEN + "Consecutive Days: " + data.getConsecutiveDays() + " days");
 	}

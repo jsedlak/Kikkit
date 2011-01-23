@@ -50,7 +50,7 @@ public class ItemCommandsListener extends CommandListener {
 				if(playerToGiveTo != null){
 					ItemStack itemStack = new ItemStack(id, amount);
 					playerToGiveTo.getInventory().addItem(itemStack);
-					playerToGiveTo.getInventory().getItemInHand();
+					//playerToGiveTo.getInventory().getItemInHand();
 					
 					sourcePlayer.sendMessage(ChatColor.RED + "Gift given!");
 					if(!sourcePlayer.getName().equalsIgnoreCase(playerToGiveTo.getName())) playerToGiveTo.sendMessage(ChatColor.RED + "Enjoy your gift!");
