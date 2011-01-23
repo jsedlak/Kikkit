@@ -25,6 +25,8 @@ public class MarketedGood {
 	}
 	
 	public int sell(int price, int amount){
+		if(amount <= 0) return 0;
+		
 		if(!willSellAt(price)){
 			return 0;
 		}
@@ -46,6 +48,8 @@ public class MarketedGood {
 	}
 	
 	public int buy(int price, int amount){
+		if(amount <= 0) return 0;
+		
 		if(!willBuyAt(price)){
 			return 0;
 		}
@@ -58,10 +62,12 @@ public class MarketedGood {
 		
 		amountInBin -= sold;
 		
-		currentSellPrice += 1;
-		currentBuyPrice += 3;
-		
-		getMarket().save();
+		if(sold > 0){
+			currentSellPrice += 1;
+			currentBuyPrice += 3;
+			
+			getMarket().save();
+		}
 		
 		return sold;
 	}
