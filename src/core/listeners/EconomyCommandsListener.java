@@ -169,6 +169,13 @@ public class EconomyCommandsListener extends CommandListener {
 				Market market = getPlugin().getMarket();
 				MarketedGood goods = market.getGoods(itemId);
 				
+				if(market.isBanned(itemId)){
+					sourcePlayer.sendMessage(ChatColor.RED + "That item has been banned from the market.");
+					
+					setCommandHandled(event, true);
+					return true;
+				}
+				
 				int price = goods.getSellPrice();
 				int amountSold = goods.sell(price, amount);
 				
@@ -250,6 +257,13 @@ public class EconomyCommandsListener extends CommandListener {
 				Market market = getPlugin().getMarket();
 				MarketedGood goods = market.getGoods(itemId);
 				PlayerData playerData = getPlugin().getPlayerManager().get(sourcePlayer.getName());
+				
+				if(market.isBanned(itemId)){
+					sourcePlayer.sendMessage(ChatColor.RED + "That item has been banned from the market.");
+					
+					setCommandHandled(event, true);
+					return true;
+				}
 				
 				int price = goods.getBuyPrice();
 				

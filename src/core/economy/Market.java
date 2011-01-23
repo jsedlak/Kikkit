@@ -16,12 +16,20 @@ import core.*;
 import core.bukkit.ItemConstants;
 
 public class Market {
+	public class BannedGood {
+		public int Id;
+		
+		public BannedGood(int id){
+			Id = id;
+		}
+	}
+	
 	public static final String DefaultMarketFilename = "market.dat";
 	
 	private String filename;
 	private Kikkit plugin;
 	private String currencyName = "kredits";
-	private ArrayList<Integer> bannedItemIds = new ArrayList<Integer>();
+	private ArrayList<BannedGood> bannedItemIds = new ArrayList<BannedGood>();
 	
 	private ArrayList<MarketedGood> goods = new ArrayList<MarketedGood>();
 	
@@ -67,8 +75,10 @@ public class Market {
 						try{
 							int id = Integer.parseInt(idString);
 							
-							bannedItemIds.add(id);
-						}catch(Exception ex){}
+							bannedItemIds.add(new BannedGood(id));
+						}catch(Exception ex){
+							Kikkit.MinecraftLog.info("Can't parse good from " + idString);
+						}
 					}
 					continue;
 				}
@@ -101,7 +111,7 @@ public class Market {
 			
 			outputFile.write("bannedIds=");
 			for(int i = 0; i < bannedItemIds.size(); i++){
-				outputFile.write(bannedItemIds.get(i));
+				outputFile.write("" + bannedItemIds.get(i).Id);
 				if(i < bannedItemIds.size() - 1) outputFile.write(",");
 			}
 			outputFile.write("\n");
@@ -122,9 +132,7 @@ public class Market {
 	}
 	
 	public MarketedGood getGoods(int id){
-		if(bannedItemIds.contains(id)){
-			return null;
-		}
+		if(isBanned(id)) return null;
 		
 		for(int i = 0; i < goods.size(); i++){
 			MarketedGood good = goods.get(i);
@@ -133,6 +141,14 @@ public class Market {
 		}
 		
 		return null;
+	}
+	
+	public boolean isBanned(int itemId){
+		for(BannedGood i : bannedItemIds){
+			if(i.Id == itemId) return true;
+		}
+		
+		return false;
 	}
 	
 	private MarketedGood loadGood(String line, String[] data){
@@ -162,9 +178,31 @@ public class Market {
 	}
 	
 	private void loadForFirstRun(){
+		bannedItemIds.clear();
+		bannedItemIds.add(new BannedGood(0));
+		bannedItemIds.add(new BannedGood(7));
+		bannedItemIds.add(new BannedGood(8));
+		bannedItemIds.add(new BannedGood(9));
+		bannedItemIds.add(new BannedGood(18));
+		bannedItemIds.add(new BannedGood(26));
+		bannedItemIds.add(new BannedGood(27));
+		bannedItemIds.add(new BannedGood(28));
+		bannedItemIds.add(new BannedGood(29));
+		bannedItemIds.add(new BannedGood(30));
+		bannedItemIds.add(new BannedGood(31));
+		bannedItemIds.add(new BannedGood(32));
+		bannedItemIds.add(new BannedGood(33));
+		bannedItemIds.add(new BannedGood(34));
+		bannedItemIds.add(new BannedGood(48));
+		bannedItemIds.add(new BannedGood(52));
+		bannedItemIds.add(new BannedGood(51));
+		bannedItemIds.add(new BannedGood(87));
+		bannedItemIds.add(new BannedGood(88));
+		bannedItemIds.add(new BannedGood(90));
+		
 		for(Material material : Material.values()){
 			goods.add(
-					new MarketedGood(this, material.getId(), 200, 200, 5)
+					new MarketedGood(this, material.getId(), 200, 10, 5)
 			);
 		}
 	}
