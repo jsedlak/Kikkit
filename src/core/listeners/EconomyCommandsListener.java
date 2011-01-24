@@ -44,6 +44,64 @@ public class EconomyCommandsListener extends CommandListener {
 			setCommandHandled(event, true);
 			return true;
 		}
+		else if(cmdData[0].equalsIgnoreCase("/setprice") || cmdData[0].equalsIgnoreCase("/sp")){
+			Kikkit.MinecraftLog.info("/setprice body");
+			
+			if(!canUseCommand(sourcePlayer, "/setprice")){
+				Kikkit.MinecraftLog.info("Security error.");
+				return true;
+			}
+			
+			if(cmdData.length >= 2 && cmdData[1].equalsIgnoreCase("?")){
+				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Sets the price of an item.");
+				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] /setprice <b, s> <item id> <price>");
+				
+				setCommandHandled(event, true);
+				return true;
+			}
+				
+			if(cmdData.length >= 4){
+				int itemId = 0, price = 0 ;
+				
+				try{
+					itemId = Integer.parseInt(cmdData[2]);
+					price = Integer.parseInt(cmdData[3]);
+				}
+				catch(NumberFormatException nfe){
+					sourcePlayer.sendMessage(ChatColor.RED + "Syntax error. Please check the usage for more information.");
+					
+					setCommandHandled(event, true);
+					return true;
+				}
+				
+				if(itemId <= 0 || price <= 0){
+					sourcePlayer.sendMessage(ChatColor.RED + "Syntax error. Please check the usage for more information.");
+					
+					setCommandHandled(event, true);
+					return true;
+				}
+				
+				Market market = getMarket();
+				MarketedGood good = market.getGoods(itemId);
+				
+				if(good == null){
+					sourcePlayer.sendMessage(ChatColor.RED + "Syntax error. Please check the usage for more information.");
+					
+					setCommandHandled(event, true);
+					return true;
+				}
+				
+				if(cmdData[1].equalsIgnoreCase("b")) good.setBuyPrice(price);
+				else if(cmdData[1].equalsIgnoreCase("s")) good.setSellPrice(price);
+				
+				market.save();
+				
+				sourcePlayer.sendMessage(ChatColor.RED + "Set price of " + itemId + " to " + price);
+				
+				setCommandHandled(event, true);
+				return true;
+			}
+		}
 		else if(cmdData[0].equalsIgnoreCase("/getprice") || cmdData[0].equalsIgnoreCase("/gp")){
 			if(!canUseCommand(sourcePlayer, "/getprice")){
 				return true;
@@ -264,6 +322,12 @@ public class EconomyCommandsListener extends CommandListener {
 					setCommandHandled(event, true);
 					return true;
 				}
+				else if(goods == null || goods.getAmount() == 0){
+					sourcePlayer.sendMessage(ChatColor.RED + "Sold out!");
+					
+					setCommandHandled(event, true);
+					return true;
+				}
 				
 				int price = goods.getBuyPrice();
 				
@@ -276,8 +340,6 @@ public class EconomyCommandsListener extends CommandListener {
 				}
 				
 				int amountSold = goods.buy(price, amount);
-				
-				
 
 				// TODO: Custom prices
 				playerData.setCredits(playerData.getCredits() - amountSold * price);

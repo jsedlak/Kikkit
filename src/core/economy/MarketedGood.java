@@ -64,7 +64,7 @@ public class MarketedGood {
 		
 		if(sold > 0){
 			currentSellPrice += 1;
-			currentBuyPrice += 3;
+			currentBuyPrice += 5;
 			
 			getMarket().save();
 		}
@@ -82,7 +82,9 @@ public class MarketedGood {
 	
 	public int getId() { return itemId; }
 	public int getBuyPrice() { return currentBuyPrice; }
+	public void setBuyPrice(int price) { currentBuyPrice = price; }
 	public int getSellPrice() { return currentSellPrice; }
+	public void setSellPrice(int price) { currentSellPrice = price; }
 	public long getAmount() { return amountInBin; }
 	public Market getMarket() { return market; }
 }
