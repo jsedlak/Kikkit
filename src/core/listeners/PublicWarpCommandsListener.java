@@ -63,7 +63,7 @@ public class PublicWarpCommandsListener extends CommandListener {
     		setCommandHandled(event, true);
 			return true;
     	}
-    	else if(cmdData[0].equalsIgnoreCase("/setwarp")){
+    	else if(cmdData[0].equalsIgnoreCase("/setwarp") || cmdData[0].equalsIgnoreCase("/swarp")){
     		if(!canUseCommand(sourcePlayer, "/setwarp")){
     			// Error!
     			return true;
@@ -72,6 +72,7 @@ public class PublicWarpCommandsListener extends CommandListener {
     		if(cmdData.length > 1){
     			if(cmdData[1].equalsIgnoreCase("?")){
     				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] /setwarp <warp name>");
+    				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Shortcuts: /swarp");
     			}
     			else{
 					WarpList list = getPlugin().getServerModWarps();
@@ -84,6 +85,32 @@ public class PublicWarpCommandsListener extends CommandListener {
     			setCommandHandled(event, true);
     			return true;
     		}
+    	}
+    	else if(cmdData[0].equalsIgnoreCase("/removewarp") || cmdData[0].equalsIgnoreCase("/rmwarp")){
+    		if(!canUseCommand(sourcePlayer, "/setwarp")){
+    			return true;
+    		}
+    		
+    		if(cmdData.length > 1){
+    			if(cmdData[1].equalsIgnoreCase("?")){
+    				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] /removewarp <warp name>");
+    				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Shortcuts: /rmwarp");
+    			}
+    			else {
+    				WarpList list = getPlugin().getServerModWarps();
+    				
+    				if(list.remove(cmdData[1])) sourcePlayer.sendMessage(ChatColor.RED + cmdData[1]+ " warp has been removed.");
+    				else sourcePlayer.sendMessage(ChatColor.RED + cmdData[1] + " warp could not be found.");
+    			}
+    			
+    			setCommandHandled(event, true);
+        		return true;
+    		}
+    		
+    		sourcePlayer.sendMessage(ChatColor.RED + "Incorrect usage, please see the manual.");
+    		
+    		setCommandHandled(event, true);
+    		return true;
     	}
     	else if(cmdData[0].equalsIgnoreCase("/warp")){
 			if(!canUseCommand(sourcePlayer, "/warp")){

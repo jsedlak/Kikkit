@@ -21,6 +21,8 @@ public class WarpList {
 	}
 	
 	public WarpPoint get(String username){
+		if(warps == null || warps.size() <= 0) return null;
+		
 		for(WarpPoint w : warps){
 			if(w.Username.equalsIgnoreCase(username)){
 				return w;
@@ -53,6 +55,20 @@ public class WarpList {
 		}
 		
 		save();
+	}
+	
+	public boolean remove(String key){
+		for(int k = warps.size() - 1; k >= 0; k--){
+			WarpPoint wp = warps.get(k);
+			
+			if(wp.Username.equalsIgnoreCase(key)){
+				warps.remove(k);
+				
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	public void load(String filename){
