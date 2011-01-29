@@ -110,7 +110,7 @@ public class Kikkit extends JavaPlugin {
 	protected void initialize(){
 		// Tell the console that we have started loading the plugin
 		MinecraftLog.info(getPluginName() + " is being initialized.");
-	
+		
 		// Load the configuration, and the whitelist files.
 		securityManager = new SecurityManager();
 		genConfig = new GenericConfig("config/kikkit.config");
@@ -128,7 +128,8 @@ public class Kikkit extends JavaPlugin {
 		pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Normal, this);
 		pm.registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
 		pm.registerEvent(Event.Type.BLOCK_CANBUILD, blockListener, Priority.Normal, this);
-		pm.registerEvent(Event.Type.BLOCK_PLACED, playerListener, Priority.Normal, this);
+		pm.registerEvent(Event.Type.BLOCK_PLACED, blockListener, Priority.Normal, this);
+		pm.registerEvent(Event.Type.BLOCK_RIGHTCLICKED, blockListener, Priority.Normal, this);
 		pm.registerEvent(Event.Type.BLOCK_IGNITE, blockListener, Priority.Normal, this);
 		pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.Normal, this);
 		pm.registerEvent(Event.Type.PLAYER_MOVE, new KikkitUpdater(this), Priority.Normal, this);

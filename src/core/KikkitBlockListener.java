@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.*;
+import org.bukkit.inventory.ItemStack;
 
 import core.bukkit.ItemConstants;
 
@@ -20,9 +21,10 @@ public class KikkitBlockListener extends BlockListener {
 	
 	@Override
     public void onBlockCanBuild(BlockCanBuildEvent event) {
-		//Kikkit.MinecraftLog.info("onBlockCanBuild");
+		Kikkit.MinecraftLog.info("onBlockCanBuild(" + event.getMaterialId() + ")");
 		
 		//Player player = event.getPlayer();
+		//event.setBuildable(true);
 		
 		if(event.getMaterialId() == ItemConstants.TntId || event.getBlock().getTypeId() == ItemConstants.TntId){
 			/*if(!plugin.canPlayerIgnite(player)){
@@ -37,14 +39,17 @@ public class KikkitBlockListener extends BlockListener {
 				event.setCancelled(true);
 			}*/
 			Kikkit.MinecraftLog.info("Someone has tried to use TNT.");
-			plugin.broadcast(ChatColor.RED + "Someone has tried placing TNT, but has been blocked!");
-			event.setBuildable(false);
+			//plugin.broadcast(ChatColor.RED + "Someone has tried placing TNT, but has been blocked!");
+			//event.setBuildable(false);
 		}
     }
 	
 	@Override
 	public void onBlockPlace(BlockPlaceEvent event){
+		event.setCancelled(false);
+		
 		//Kikkit.MinecraftLog.info("onBlockCanPlace");
+		Kikkit.MinecraftLog.info("onBlockPlace(block: " + event.getBlock().getTypeId() + ", placed: " + event.getBlockPlaced().getTypeId() + ")");
 		
 		Player player = event.getPlayer();
 		
@@ -60,6 +65,13 @@ public class KikkitBlockListener extends BlockListener {
 				
 				event.setCancelled(true);
 			}
+		}
+	}
+	
+	@Override
+	public void onBlockRightClick(BlockRightClickEvent event){
+		if(event.getItemInHand().getTypeId() == ItemConstants.LavaBucketId){
+			event.getPlayer().setItemInHand(new ItemStack(1, 1));
 		}
 	}
 	
