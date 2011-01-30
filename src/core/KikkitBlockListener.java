@@ -1,12 +1,11 @@
 package core;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.*;
 import org.bukkit.inventory.ItemStack;
-
-import core.bukkit.ItemConstants;
 
 
 public class KikkitBlockListener extends BlockListener {
@@ -21,12 +20,12 @@ public class KikkitBlockListener extends BlockListener {
 	
 	@Override
     public void onBlockCanBuild(BlockCanBuildEvent event) {
-		Kikkit.MinecraftLog.info("onBlockCanBuild(" + event.getMaterialId() + ")");
+		//Kikkit.MinecraftLog.info("onBlockCanBuild(" + event.getMaterialId() + ")");
 		
 		//Player player = event.getPlayer();
 		//event.setBuildable(true);
 		
-		if(event.getMaterialId() == ItemConstants.TntId || event.getBlock().getTypeId() == ItemConstants.TntId){
+		if(event.getMaterialId() == Material.TNT.getId() || event.getBlock().getTypeId() == Material.TNT.getId()){
 			/*if(!plugin.canPlayerIgnite(player)){
 				plugin.broadcast(ChatColor.RED + player.getName() + " has tried placing TNT, but has been blocked!");
 				Kikkit.MinecraftLog.info(player.getName() + " has tried to use TNT.");
@@ -49,11 +48,11 @@ public class KikkitBlockListener extends BlockListener {
 		event.setCancelled(false);
 		
 		//Kikkit.MinecraftLog.info("onBlockCanPlace");
-		Kikkit.MinecraftLog.info("onBlockPlace(block: " + event.getBlock().getTypeId() + ", placed: " + event.getBlockPlaced().getTypeId() + ")");
+		//Kikkit.MinecraftLog.info("onBlockPlace(block: " + event.getBlock().getTypeId() + ", placed: " + event.getBlockPlaced().getTypeId() + ")");
 		
 		Player player = event.getPlayer();
 		
-		if(event.getBlockPlaced().getTypeId() == ItemConstants.TntId || event.getBlock().getTypeId() == ItemConstants.TntId){
+		if(event.getBlockPlaced().getTypeId() == Material.TNT.getId() || event.getBlock().getTypeId() == Material.TNT.getId()){
 			if(!plugin.canPlayerIgnite(player)){
 				plugin.broadcast(ChatColor.RED + player.getName() + " has tried placing TNT, but has been blocked!");
 				Kikkit.MinecraftLog.info(player.getName() + " has tried to use TNT.");
@@ -70,8 +69,22 @@ public class KikkitBlockListener extends BlockListener {
 	
 	@Override
 	public void onBlockRightClick(BlockRightClickEvent event){
-		if(event.getItemInHand().getTypeId() == ItemConstants.LavaBucketId){
-			event.getPlayer().setItemInHand(new ItemStack(1, 1));
+		Player sourcePlayer = event.getPlayer();
+		
+		if(event.getItemInHand().getTypeId() == Material.LAVA_BUCKET.getId()){
+			if(!plugin.canPlayerIgnite(sourcePlayer)){
+				sourcePlayer.setItemInHand(new ItemStack(Material.BUCKET));
+				
+				plugin.broadcast(ChatColor.RED + sourcePlayer.getName() + " has tried using laval, but has been blocked!");
+				
+				Kikkit.MinecraftLog.info(sourcePlayer.getName() + " has tried using lava.");
+				
+				if(igniteKickCounter.checkAndSet(sourcePlayer.getName()) > Kikkit.MAX_IGNITE_ATTEMPTS){
+					sourcePlayer.kickPlayer("You have been kicked for attempting to grief.");
+					
+					plugin.broadcast(ChatColor.DARK_PURPLE + sourcePlayer.getName() + " has been kicked for trying to use lava.");
+				}
+			}
 		}
 	}
 	

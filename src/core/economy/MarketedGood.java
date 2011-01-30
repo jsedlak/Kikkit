@@ -86,5 +86,6 @@ public class MarketedGood {
 	public int getSellPrice() { return currentSellPrice; }
 	public void setSellPrice(int price) { currentSellPrice = price; }
 	public long getAmount() { return amountInBin; }
+	public void setAmount(long amount) { amountInBin = amount; }
 	public Market getMarket() { return market; }
 }

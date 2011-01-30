@@ -1,13 +1,13 @@
 package core.listeners;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 
 import core.CommandListener;
 import core.Kikkit;
-import core.bukkit.ItemConstants;
 
 public class ItemCommandsListener extends CommandListener {
 
@@ -78,7 +78,7 @@ public class ItemCommandsListener extends CommandListener {
 			}
 			
 			if(cmdData.length >= 2){
-				int id = ItemConstants.ConvertToId(getLastFromIndex(cmdData, 1));
+				int id = Material.getMaterial(getLastFromIndex(cmdData, 1)).getId();
 				
 				Kikkit.MinecraftLog.info(sourcePlayer.getName() + " is looking for the id of " + getLastFromIndex(cmdData, 1));
 				

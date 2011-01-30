@@ -3,15 +3,16 @@ package core.listeners;
 import java.util.HashMap;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import core.Kikkit;
+import core.Parser;
 import core.economy.*;
 import core.players.*;
-import core.bukkit.*;
 import core.CommandListener;
 
 public class EconomyCommandsListener extends CommandListener {
@@ -43,6 +44,43 @@ public class EconomyCommandsListener extends CommandListener {
 			
 			setCommandHandled(event, true);
 			return true;
+		}
+		else if(cmdData[0].equalsIgnoreCase("/stock")){
+			if(!canUseCommand(sourcePlayer, "/stock")){
+				return true;
+			}
+			
+			if(cmdData.length >= 2 && cmdData[1].equalsIgnoreCase("?")){
+				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Restocks an item in the marketplace.");
+				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] /stock <item id> <amount>");
+				
+				setCommandHandled(event, true);
+				return true;
+			}
+			
+			try{
+				int itemId = Parser.TryParseInt(cmdData[1], -1);
+				int amount = Parser.TryParseInt(cmdData[2], 500);
+				
+				if(itemId < 0){
+					sourcePlayer.sendMessage(ChatColor.RED + "That item could not be found.");
+					
+					setCommandHandled(event, true);
+					return true;
+				}
+				
+				getPlugin().getMarket().getGoods(itemId).setAmount(amount);
+				
+				sourcePlayer.sendMessage(ChatColor.RED + "Set amount of " + itemId + " to " + amount);
+			
+			}
+			catch(Exception ex){
+				sourcePlayer.sendMessage(ChatColor.RED + "Incorrect usage.");
+			}
+			
+			setCommandHandled(event, true);
+			return true;
+			
 		}
 		else if(cmdData[0].equalsIgnoreCase("/setprice") || cmdData[0].equalsIgnoreCase("/sp")){
 			Kikkit.MinecraftLog.info("/setprice body");
@@ -129,11 +167,11 @@ public class EconomyCommandsListener extends CommandListener {
 				itemId = Integer.parseInt(itemText);
 			}
 			catch(Exception ex){
-				itemId = ItemConstants.ConvertToId(itemText);
+				itemId = Material.getMaterial(itemText).getId(); //ItemConstants.ConvertToId(itemText);
 			}
 			
 			// Try one last time
-			if(itemId < 0) itemId = ItemConstants.ConvertToId(itemText);
+			if(itemId < 0) itemId = Material.getMaterial(itemText).getId();
 			
 			if(itemId < 0){
 				sourcePlayer.sendMessage(ChatColor.RED + "Unknown item.");
@@ -174,11 +212,11 @@ public class EconomyCommandsListener extends CommandListener {
 					itemId = Integer.parseInt(itemText);
 				}
 				catch(Exception ex){
-					itemId = ItemConstants.ConvertToId(itemText);
+					itemId = Material.getMaterial(itemText).getId();
 				}
 				
 				// Try one last time
-				if(itemId < 0) itemId = ItemConstants.ConvertToId(itemText);
+				if(itemId < 0) itemId = Material.getMaterial(itemText).getId();
 				
 				if(itemId < 0){
 					sourcePlayer.sendMessage(ChatColor.RED + "Unknown item.");
@@ -280,11 +318,11 @@ public class EconomyCommandsListener extends CommandListener {
 					itemId = Integer.parseInt(itemText);
 				}
 				catch(Exception ex){
-					itemId = ItemConstants.ConvertToId(itemText);
+					itemId = Material.getMaterial(itemText).getId();
 				}
 				
 				// Try one last time
-				if(itemId < 0) itemId = ItemConstants.ConvertToId(itemText);
+				if(itemId < 0) itemId = Material.getMaterial(itemText).getId();
 				
 				if(itemId < 0){
 					sourcePlayer.sendMessage(ChatColor.RED + "Unknown item.");

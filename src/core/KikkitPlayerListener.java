@@ -1,12 +1,12 @@
 package core;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
 import core.listeners.*;
-import core.bukkit.ItemConstants;
 
 public class KikkitPlayerListener extends PlayerListener {
 	private Kikkit plugin;
@@ -28,15 +28,6 @@ public class KikkitPlayerListener extends PlayerListener {
 		listeners.add(new EconomyCommandsListener(plugin));
 		listeners.add(new ChatCommandsListener(plugin));
 	}
-	
-	/*
-	private void setCommandHandled(PlayerChatEvent event, boolean wasCommandHandled){
-		if(wasCommandHandled){
-			event.setCancelled(true);
-		}
-		
-	}
-	*/
 	
 	public void onPlayerChat(PlayerChatEvent event){
 		if(event.isCancelled()) return;
@@ -64,7 +55,7 @@ public class KikkitPlayerListener extends PlayerListener {
 		ItemStack item = event.getItem();
 		Player player = event.getPlayer();
 		
-		if(item.getTypeId() == ItemConstants.LavaBucketId){
+		if(item.getTypeId() == Material.LAVA_BUCKET.getId()){
 			if(!plugin.canPlayerIgnite(player)){
 				plugin.broadcast(ChatColor.RED + player.getName() + " has tried using the lava bucket, but has been blocked!");
 				Kikkit.MinecraftLog.info(player.getName() + " has tried to use " + item.getType().name() + " with Id " + item.getTypeId() + ".");
@@ -77,7 +68,7 @@ public class KikkitPlayerListener extends PlayerListener {
 				event.setCancelled(true);
 			}
 		}
-		else if(item.getTypeId() == ItemConstants.TntId){
+		else if(item.getTypeId() == Material.TNT.getId()){
 			if(!plugin.canPlayerIgnite(player)){
 				plugin.broadcast(ChatColor.RED + player.getName() + " has tried placing TNT, but has been blocked!");
 				Kikkit.MinecraftLog.info(player.getName() + " has tried to use " + item.getType().name() + " with Id " + item.getTypeId() + ".");
@@ -116,9 +107,16 @@ public class KikkitPlayerListener extends PlayerListener {
 		}
 		// If we are not in a whiteout, notify them of the rules.
 		else{
-			player.sendMessage(ChatColor.GOLD + "[" + Kikkit.getPluginName() + " by Kr1sc]");
-			player.sendMessage(ChatColor.GOLD + "Please respect others' property and no griefing.");
-			player.sendMessage(ChatColor.GOLD + "Fire and lava are in a whiteout.");
+			if(plugin.getMotd().length() > 0){
+				for(String line : plugin.getMotd().split("{n}")){
+					player.sendMessage(line);
+				}
+			}
+			else{
+				player.sendMessage(ChatColor.GOLD + "[" + Kikkit.getPluginName() + " by Kr1sc]");
+				player.sendMessage(ChatColor.GOLD + "Please respect others' property and no griefing.");
+				player.sendMessage(ChatColor.GOLD + "Fire and lava are in a whiteout.");
+			}
 		}
 		
 		plugin.getPlayerManager().onPlayerJoin(event);

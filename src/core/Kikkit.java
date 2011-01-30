@@ -32,7 +32,8 @@ public class Kikkit extends JavaPlugin {
 	public static Logger MinecraftLog = null;				// Used to log stuff
 	public static boolean IsDebugging = false;
 	
-	public static final int MAX_IGNITE_ATTEMPTS = 5;
+	public static int MAX_IGNITE_ATTEMPTS = 5;
+	
 	public static final int DAY = 0;
 	public static final int NIGHT = 13500;
 	
@@ -68,6 +69,8 @@ public class Kikkit extends JavaPlugin {
 	private PlayerManager playerManager;
 	
 	private Market currentMarket;
+	
+	private String messageOfTheDay = "";
 	
 	Timer updateTimer;
 	
@@ -109,7 +112,7 @@ public class Kikkit extends JavaPlugin {
 	
 	protected void initialize(){
 		// Tell the console that we have started loading the plugin
-		MinecraftLog.info(getPluginName() + " is being initialized.");
+		MinecraftLog.info(getPluginName() + " (Kr1sc) has been initialized.");
 		
 		// Load the configuration, and the whitelist files.
 		securityManager = new SecurityManager();
@@ -121,6 +124,8 @@ public class Kikkit extends JavaPlugin {
 		hModWarpList = new WarpList("warps.txt");
 		playerManager = new PlayerManager(this);
 		currentMarket = new Market(this);
+		
+		loadConfiguration();
 		
 		// HOOK! Wasn't that a movie? Anyways, attach some event handlers (I'm a C#er, okay?)
 		PluginManager pm = getServer().getPluginManager();
@@ -139,6 +144,18 @@ public class Kikkit extends JavaPlugin {
 		//updateTimer.schedule(new KikkitUpdater(this), 0, UPDATE_INTERVAL);
 		
 		broadcast(ChatColor.DARK_PURPLE + getPluginName() + " has been initialized.");
+	}
+	
+	protected void loadConfiguration(){
+		if(genConfig.hasKey("max-ignites")){
+			MAX_IGNITE_ATTEMPTS = Parser.TryParseInt(genConfig.getValue("max-ignites"), 5);
+			
+			MinecraftLog.info("MAX_IGNITE_ATTEMPTS has been set to " + MAX_IGNITE_ATTEMPTS);
+		}
+		
+		if(genConfig.hasKey("motd")){
+			messageOfTheDay = genConfig.getValue("motd");
+		}
 	}
 	
 	public boolean canUseCommand(Player player, String command){
@@ -193,6 +210,10 @@ public class Kikkit extends JavaPlugin {
 			securityManager.isInGroup(player, Groups.Vip) || 
 			securityManager.isInGroup(player, Groups.Moderator) || 
 			securityManager.isInGroup(player, Groups.Admin);
+	}
+	
+	public String getMotd(){
+		return messageOfTheDay;
 	}
 	
 	// Gets whether or not the plugin is enabled

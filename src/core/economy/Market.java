@@ -12,7 +12,6 @@ import org.bukkit.Material;
 import org.bukkit.Server;
 
 import core.*;
-import core.bukkit.ItemConstants;
 
 public class Market {
 	public class BannedGood {
@@ -127,7 +126,7 @@ public class Market {
 	}
 	
 	public MarketedGood getGoods(String itemName){
-		return getGoods(ItemConstants.ConvertToId(itemName));
+		return getGoods(Material.getMaterial(itemName).getId());
 	}
 	
 	public MarketedGood getGoods(int id){
