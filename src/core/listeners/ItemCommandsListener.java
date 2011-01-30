@@ -78,12 +78,22 @@ public class ItemCommandsListener extends CommandListener {
 			}
 			
 			if(cmdData.length >= 2){
-				int id = Material.getMaterial(getLastFromIndex(cmdData, 1)).getId();
+				String itemName = getLastFromIndex(cmdData, 1);
+				Material material = Material.getMaterial(itemName);
 				
-				Kikkit.MinecraftLog.info(sourcePlayer.getName() + " is looking for the id of " + getLastFromIndex(cmdData, 1));
+				if(material == null){
+					sourcePlayer.sendMessage(ChatColor.RED + "Unknown item or material.");
+					
+					setCommandHandled(event, true);
+					return true;
+				}
+				
+				int id = material.getId();
+				
+				Kikkit.MinecraftLog.info(sourcePlayer.getName() + " is looking for the id of " + itemName);
 				
 				if(id < 0) sourcePlayer.sendMessage(ChatColor.RED + "Unknown item or material.");
-				else sourcePlayer.sendMessage(ChatColor.RED + "The Id for " + cmdData[1] + " is " + id);
+				else sourcePlayer.sendMessage(ChatColor.RED + "The Id for " + itemName + " is " + id);
 				
 				setCommandHandled(event, true);
 				return true;
