@@ -147,14 +147,18 @@ public class Kikkit extends JavaPlugin {
 	}
 	
 	protected void loadConfiguration(){
-		if(genConfig.hasKey("max-ignites")){
-			MAX_IGNITE_ATTEMPTS = Parser.TryParseInt(genConfig.getValue("max-ignites"), 5);
+		try{
+			if(genConfig.hasKey("max-ignites")){
+				MAX_IGNITE_ATTEMPTS = Parser.TryParseInt(genConfig.getValue("max-ignites"), 5);
+				
+				MinecraftLog.info("MAX_IGNITE_ATTEMPTS has been set to " + MAX_IGNITE_ATTEMPTS);
+			}
 			
-			MinecraftLog.info("MAX_IGNITE_ATTEMPTS has been set to " + MAX_IGNITE_ATTEMPTS);
-		}
-		
-		if(genConfig.hasKey("motd")){
-			messageOfTheDay = genConfig.getValue("motd");
+			if(genConfig.hasKey("motd")){
+				messageOfTheDay = genConfig.getValue("motd");
+			}
+		} catch(Exception ex){
+			MinecraftLog.info(ex.getMessage() + "\n" + ex.getStackTrace());
 		}
 	}
 	

@@ -19,6 +19,6 @@ public class Parser {
 			}
 		}
 		
-		return null;
+		return Material.getMaterial(input.toUpperCase().replaceAll(" ", "_"));
 	}
 }

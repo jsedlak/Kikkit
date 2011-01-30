@@ -3,6 +3,7 @@ package core.listeners;
 import java.util.HashMap;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
@@ -160,29 +161,24 @@ public class EconomyCommandsListener extends CommandListener {
 			
 			String type = cmdData[1];
 			String itemText = getLastFromIndex(cmdData, 2);
-			int itemId;
 			
-			try{
-				itemId = Integer.parseInt(itemText);
-			}
-			catch(Exception ex){
-				itemId = Parser.ParseMaterial(itemText).getId(); //Material.getMaterial(itemText).getId(); //ItemConstants.ConvertToId(itemText);
-			}
+			Material itemMaterial = null;
 			
-			// Try one last time
-			if(itemId < 0) itemId = Parser.ParseMaterial(itemText).getId();
+			int itemId = Parser.TryParseInt(itemText, -1);
 			
-			if(itemId < 0){
-				sourcePlayer.sendMessage(ChatColor.RED + "Unknown item.");
-				
-				setCommandHandled(event, true);
-				return true;
+			if(itemId > 0) itemMaterial = Material.getMaterial(itemId);
+			else itemMaterial = Parser.ParseMaterial(itemText);
+			
+			Market market = getPlugin().getMarket();
+			
+			if(itemMaterial == null) sourcePlayer.sendMessage(ChatColor.RED + "Unknown item.");
+			else if(market.isBanned(itemMaterial.getId())) sourcePlayer.sendMessage(ChatColor.RED + "That item is banned.");
+			else{
+				if(type.equalsIgnoreCase("s"))
+					sourcePlayer.sendMessage(ChatColor.RED + "The price is set at " + market.getGoods(itemMaterial.getId()).getSellPrice() + " " + market.getCurrencyName() + ".");
+				else
+					sourcePlayer.sendMessage(ChatColor.RED + "The price is set at " + market.getGoods(itemMaterial.getId()).getBuyPrice() + " " + market.getCurrencyName() + ".");
 			}
-
-			if(type.equalsIgnoreCase("s"))
-				sourcePlayer.sendMessage(ChatColor.RED + "The price is set at " + getPlugin().getMarket().getGoods(itemId).getSellPrice() + " " + getMarket().getCurrencyName() + ".");
-			else
-				sourcePlayer.sendMessage(ChatColor.RED + "The price is set at " + getPlugin().getMarket().getGoods(itemId).getBuyPrice() + " " + getMarket().getCurrencyName() + ".");
 			
 			setCommandHandled(event, true);
 			return true;
@@ -193,103 +189,7 @@ public class EconomyCommandsListener extends CommandListener {
 				return true;
 			}
 			
-			if(cmdData.length >= 2 && cmdData[1].equalsIgnoreCase("?")){
-				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Sells an item in your inventory to the market.");
-				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] /sell <amount> <item id, item name>");
-				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Example: /sell 64 cobblestone");
-				
-				setCommandHandled(event, true);
-				return true;
-			}
-			
-			if(cmdData.length >= 3){
-				String itemText = getLastFromIndex(cmdData, 2);
-				int amount;
-				int itemId;
-				
-				try{
-					itemId = Integer.parseInt(itemText);
-				}
-				catch(Exception ex){
-					itemId = Parser.ParseMaterial(itemText).getId();
-				}
-				
-				// Try one last time
-				if(itemId < 0) itemId = Parser.ParseMaterial(itemText).getId();
-				
-				if(itemId < 0){
-					sourcePlayer.sendMessage(ChatColor.RED + "Unknown item.");
-					
-					setCommandHandled(event, true);
-					return true;
-				}
-				
-				try{
-					amount = Integer.parseInt(cmdData[1]);
-				}
-				catch(NumberFormatException nfe){
-					sourcePlayer.sendMessage(ChatColor.RED + "Couldn't parse the amount. Did you mean /sell " + cmdData[2] + " " + cmdData[1] + "?");
-					sourcePlayer.sendMessage(ChatColor.RED + "For more information: /sell ?");
-					
-					setCommandHandled(event, true);
-					return true;
-				}
-				
-				if(amount <= 0){
-					sourcePlayer.sendMessage(ChatColor.RED + "Invalid amount.");
-					
-					setCommandHandled(event, true);
-					return true;
-				}
-				else if(amount > 64) amount = 64;
-				
-				//sourcePlayer.sendMessage(ChatColor.RED + "This isn't finished yet.");
-				
-				ItemStack itemStack = new ItemStack(itemId, amount);
-				
-				PlayerInventory inv = sourcePlayer.getInventory();
-				
-				// Try to remove the items
-				HashMap<Integer, ItemStack> returnedHash = inv.removeItem(itemStack);
-		
-				for(Integer i : returnedHash.keySet()){
-					//sourcePlayer.sendMessage(ChatColor.DARK_PURPLE + i.toString() + ": " + returnedHash.get(i).getType().name() + "(" + returnedHash.get(i).getAmount() + ")");
-					ItemStack returnedStack = returnedHash.get(i);
-					
-					if(returnedStack.getTypeId() == itemId){
-						amount -= returnedStack.getAmount();
-					}
-				}
-				
-				Market market = getPlugin().getMarket();
-				MarketedGood goods = market.getGoods(itemId);
-				
-				if(market.isBanned(itemId)){
-					sourcePlayer.sendMessage(ChatColor.RED + "That item has been banned from the market.");
-					
-					setCommandHandled(event, true);
-					return true;
-				}
-				
-				int price = goods.getSellPrice();
-				int amountSold = goods.sell(price, amount);
-				
-				// Return unsold items
-				
-				if(amountSold < amount){
-					inv.addItem(new ItemStack(itemId, amount - amountSold));
-				}
-				
-				PlayerData playerData = getPlugin().getPlayerManager().get(sourcePlayer.getName());
-
-				// TODO: Custom prices
-				playerData.setCredits(playerData.getCredits() + amountSold * price);
-
-				sourcePlayer.sendMessage(ChatColor.RED + "Sold " + amountSold + " at a price of " + price + " " + getMarket().getCurrencyName());
-				
-				setCommandHandled(event, true);
-				return true;
-			}
+			return HandleSale(event, cmdData, sourcePlayer);
 		}
 		else if(cmdData[0].equalsIgnoreCase("/buy")){
 			if(!canUseCommand(sourcePlayer, "/buy")){
@@ -297,70 +197,133 @@ public class EconomyCommandsListener extends CommandListener {
 				return true;
 			}
 			
-			if(cmdData.length >= 2 && cmdData[1].equalsIgnoreCase("?")){
-				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Buys an item in from the market.");
-				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] /buy <amount> <item id, item name>");
-				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] To get price: /gp b <item id, item name>");
-				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Example: /buy 64 cobblestone");
-				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] NOTE: You are responsible for having the necessary free space. No refunds.");
+			return HandlePurchase(event, cmdData, sourcePlayer);
+		}
+		
+		return false;
+	}
+	
+	private boolean HandleSale(PlayerChatEvent event, String[] cmdData, Player sourcePlayer){
+		if(cmdData.length >= 2 && cmdData[1].equalsIgnoreCase("?")){
+			sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Sells an item in your inventory to the market.");
+			sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] /sell <amount> <item id, item name>");
+			sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Example: /sell 64 cobblestone");
+			
+			setCommandHandled(event, true);
+			return true;
+		}
+		
+		if(cmdData.length >= 3){
+			String itemText = getLastFromIndex(cmdData, 2);
+			Market market = getPlugin().getMarket();
+			
+			Material itemMaterial = null;
+			
+			int amount = Parser.TryParseInt(cmdData[1], -1);
+			int itemId = Parser.TryParseInt(itemText, -1);
+			
+			if(itemId > 0) itemMaterial = Material.getMaterial(itemId);
+			else itemMaterial = Parser.ParseMaterial(itemText);
+			
+			if(itemMaterial == null){
+				// TODO: Provide nearest results
+				sourcePlayer.sendMessage(ChatColor.RED + "Unknown item or material.");
+			}
+			else if(amount < 1){
+				sourcePlayer.sendMessage(ChatColor.RED + "Couldn't parse the amount. Did you mean /sell " + cmdData[2] + " " + cmdData[1] + "?");
+				sourcePlayer.sendMessage(ChatColor.RED + "For more information: /sell ?");
+			}
+			else if(market.isBanned(itemMaterial.getId())){
+				sourcePlayer.sendMessage(ChatColor.RED + "That item has been banned from the market.");
+			}
+			else{
+				// Cap the amount to 64
+				// TODO: Do we need to do this?
+				// if(amount > 64) amount = 64;
 				
-				setCommandHandled(event, true);
-				return true;
+				ItemStack itemStack = new ItemStack(itemMaterial.getId(), amount);
+				
+				// Get the inventory
+				PlayerInventory inv = sourcePlayer.getInventory();
+				
+				// Try to remove the items
+				HashMap<Integer, ItemStack> returnedHash = inv.removeItem(itemStack);
+		
+				// For all the returned stacks, we need to reduce the amount to sell
+				for(Integer i : returnedHash.keySet()){
+					ItemStack returnedStack = returnedHash.get(i);
+					
+					if(returnedStack.getTypeId() == itemMaterial.getId()){
+						amount -= returnedStack.getAmount();
+					}
+				}
+				
+				// Get the goods
+				MarketedGood goods = market.getGoods(itemMaterial.getId());
+				
+				int price = goods.getSellPrice();
+				int amountSold = goods.sell(price, amount);
+				
+				// Return unsold items
+				if(amountSold < amount){
+					inv.addItem(new ItemStack(itemMaterial.getId(), amount - amountSold));
+				}
+				
+				// Get the player data and update their credits
+				PlayerData playerData = getPlugin().getPlayerManager().get(sourcePlayer.getName());
+				playerData.setCredits(playerData.getCredits() + amountSold * price);
+	
+				sourcePlayer.sendMessage(ChatColor.RED + "Sold " + amountSold + " at a price of " + price + " " + getMarket().getCurrencyName());
 			}
 			
-			if(cmdData.length >= 3){
-				String itemText = getLastFromIndex(cmdData, 2);
-				int amount;
-				int itemId;
-				
-				try{
-					itemId = Integer.parseInt(itemText);
-				}
-				catch(Exception ex){
-					itemId = Parser.ParseMaterial(itemText).getId();
-				}
-				
-				// Try one last time
-				if(itemId < 0) itemId = Parser.ParseMaterial(itemText).getId();
-				
-				if(itemId < 0){
-					sourcePlayer.sendMessage(ChatColor.RED + "Unknown item.");
-					
-					setCommandHandled(event, true);
-					return true;
-				}
-				
-				try{
-					amount = Integer.parseInt(cmdData[1]);
-				}
-				catch(NumberFormatException nfe){
-					sourcePlayer.sendMessage(ChatColor.RED + "Couldn't parse the amount. Did you mean /sell " + cmdData[2] + " " + cmdData[1] + "?");
-					sourcePlayer.sendMessage(ChatColor.RED + "For more information: /sell ?");
-					
-					setCommandHandled(event, true);
-					return true;
-				}
-				
-				if(amount <= 0){
-					sourcePlayer.sendMessage(ChatColor.RED + "Invalid amount.");
-					
-					setCommandHandled(event, true);
-					return true;
-				}
-				else if(amount > 64) amount = 64;
-				
-				Market market = getPlugin().getMarket();
-				MarketedGood goods = market.getGoods(itemId);
+			setCommandHandled(event, true);
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean HandlePurchase(PlayerChatEvent event, String[] cmdData, Player sourcePlayer){
+		if(cmdData.length >= 2 && cmdData[1].equalsIgnoreCase("?")){
+			sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Buys an item in from the market.");
+			sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] /buy <amount> <item id, item name>");
+			sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] To get price: /gp b <item id, item name>");
+			sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Example: /buy 64 cobblestone");
+			sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] NOTE: You are responsible for having the necessary free space. No refunds.");
+			
+			setCommandHandled(event, true);
+			return true;
+		}
+		
+		if(cmdData.length >= 3){
+			String itemText = getLastFromIndex(cmdData, 2);
+			Market market = getPlugin().getMarket();
+			
+			Material itemMaterial = null;
+			
+			int amount = Parser.TryParseInt(cmdData[1], -1);
+			int itemId = Parser.TryParseInt(itemText, -1);
+			
+			if(itemId > 0) itemMaterial = Material.getMaterial(itemId);
+			else itemMaterial = Parser.ParseMaterial(itemText);
+			
+			if(itemMaterial == null){
+				// TODO: Provide nearest results
+				sourcePlayer.sendMessage(ChatColor.RED + "Unknown item or material.");
+			}
+			else if(amount < 1){
+				sourcePlayer.sendMessage(ChatColor.RED + "Couldn't parse the amount. Did you mean /buy " + cmdData[2] + " " + cmdData[1] + "?");
+				sourcePlayer.sendMessage(ChatColor.RED + "For more information: /buy ?");
+			}
+			else if(market.isBanned(itemMaterial.getId())){
+				sourcePlayer.sendMessage(ChatColor.RED + "That item has been banned from the market.");
+			}
+			else{
+				MarketedGood goods = market.getGoods(itemMaterial.getId());
 				PlayerData playerData = getPlugin().getPlayerManager().get(sourcePlayer.getName());
 				
-				if(market.isBanned(itemId)){
-					sourcePlayer.sendMessage(ChatColor.RED + "That item has been banned from the market.");
-					
-					setCommandHandled(event, true);
-					return true;
-				}
-				else if(goods == null || goods.getAmount() == 0){
-					sourcePlayer.sendMessage(ChatColor.RED + "Sold out!");
+				if(goods == null || goods.getAmount() == 0){
+					sourcePlayer.sendMessage(ChatColor.RED + "Sold out of!");
 					
 					setCommandHandled(event, true);
 					return true;
@@ -382,11 +345,11 @@ public class EconomyCommandsListener extends CommandListener {
 				playerData.setCredits(playerData.getCredits() - amountSold * price);
 
 				sourcePlayer.sendMessage(ChatColor.RED + "Bought " + amountSold + " at a price of " + price + " " + getMarket().getCurrencyName());
-				sourcePlayer.getInventory().addItem(new ItemStack(itemId, amountSold));
-				
-				setCommandHandled(event, true);
-				return true;
+				sourcePlayer.getInventory().addItem(new ItemStack(itemMaterial.getId(), amountSold));
 			}
+			
+			setCommandHandled(event, true);
+			return true;
 		}
 		
 		return false;

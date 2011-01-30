@@ -108,7 +108,7 @@ public class KikkitPlayerListener extends PlayerListener {
 		// If we are not in a whiteout, notify them of the rules.
 		else{
 			if(plugin.getMotd().length() > 0){
-				for(String line : plugin.getMotd().split("{n}")){
+				for(String line : plugin.getMotd().split("/n")){
 					player.sendMessage(line);
 				}
 			}

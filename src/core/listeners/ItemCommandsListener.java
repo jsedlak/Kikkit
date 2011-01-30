@@ -42,17 +42,26 @@ public class ItemCommandsListener extends CommandListener {
 				// If a player is specified, try to parse the player name
 				if(cmdData.length >= 4) playerToGiveTo = getServer().getPlayer(cmdData[3]);
 				
-				int id = Integer.parseInt(cmdData[1]);
+				int id = Parser.TryParseInt(cmdData[1], -1);
 				int amount = 1;
 				
 				// Amount
-				if(cmdData.length > 2) amount = Integer.parseInt(cmdData[2]);
+				if(cmdData.length > 2) amount = Parser.TryParseInt(cmdData[2], -1);
+				
+				if(amount < 1 || id < 1){
+					sourcePlayer.sendMessage(ChatColor.RED + "Couldn't parse the arguments. Please consult the help.");
+					
+					setCommandHandled(event, true);
+					return true;
+				}
 				
 				if(playerToGiveTo != null){
 					ItemStack itemStack = new ItemStack(id, amount);
-					playerToGiveTo.getInventory().addItem(itemStack);
-					//playerToGiveTo.getInventory().getItemInHand();
 					
+					// Give the item
+					playerToGiveTo.getInventory().addItem(itemStack);
+					
+					// Send messages
 					sourcePlayer.sendMessage(ChatColor.RED + "Gift given!");
 					if(!sourcePlayer.getName().equalsIgnoreCase(playerToGiveTo.getName())) playerToGiveTo.sendMessage(ChatColor.RED + "Enjoy your gift!");
 					
@@ -80,6 +89,7 @@ public class ItemCommandsListener extends CommandListener {
 			
 			if(cmdData.length >= 2){
 				String itemName = getLastFromIndex(cmdData, 1);
+
 				Material material = Parser.ParseMaterial(itemName);
 				
 				if(material == null){
