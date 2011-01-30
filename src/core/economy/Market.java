@@ -126,7 +126,7 @@ public class Market {
 	}
 	
 	public MarketedGood getGoods(String itemName){
-		return getGoods(Material.getMaterial(itemName).getId());
+		return getGoods(Parser.ParseMaterial(itemName).getId());
 	}
 	
 	public MarketedGood getGoods(int id){

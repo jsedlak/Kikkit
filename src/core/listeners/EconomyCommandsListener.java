@@ -3,7 +3,6 @@ package core.listeners;
 import java.util.HashMap;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
@@ -167,11 +166,11 @@ public class EconomyCommandsListener extends CommandListener {
 				itemId = Integer.parseInt(itemText);
 			}
 			catch(Exception ex){
-				itemId = Material.getMaterial(itemText).getId(); //ItemConstants.ConvertToId(itemText);
+				itemId = Parser.ParseMaterial(itemText).getId(); //Material.getMaterial(itemText).getId(); //ItemConstants.ConvertToId(itemText);
 			}
 			
 			// Try one last time
-			if(itemId < 0) itemId = Material.getMaterial(itemText).getId();
+			if(itemId < 0) itemId = Parser.ParseMaterial(itemText).getId();
 			
 			if(itemId < 0){
 				sourcePlayer.sendMessage(ChatColor.RED + "Unknown item.");
@@ -212,11 +211,11 @@ public class EconomyCommandsListener extends CommandListener {
 					itemId = Integer.parseInt(itemText);
 				}
 				catch(Exception ex){
-					itemId = Material.getMaterial(itemText).getId();
+					itemId = Parser.ParseMaterial(itemText).getId();
 				}
 				
 				// Try one last time
-				if(itemId < 0) itemId = Material.getMaterial(itemText).getId();
+				if(itemId < 0) itemId = Parser.ParseMaterial(itemText).getId();
 				
 				if(itemId < 0){
 					sourcePlayer.sendMessage(ChatColor.RED + "Unknown item.");
@@ -318,11 +317,11 @@ public class EconomyCommandsListener extends CommandListener {
 					itemId = Integer.parseInt(itemText);
 				}
 				catch(Exception ex){
-					itemId = Material.getMaterial(itemText).getId();
+					itemId = Parser.ParseMaterial(itemText).getId();
 				}
 				
 				// Try one last time
-				if(itemId < 0) itemId = Material.getMaterial(itemText).getId();
+				if(itemId < 0) itemId = Parser.ParseMaterial(itemText).getId();
 				
 				if(itemId < 0){
 					sourcePlayer.sendMessage(ChatColor.RED + "Unknown item.");

@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 
 import core.CommandListener;
 import core.Kikkit;
+import core.Parser;
 
 public class ItemCommandsListener extends CommandListener {
 
@@ -79,7 +80,7 @@ public class ItemCommandsListener extends CommandListener {
 			
 			if(cmdData.length >= 2){
 				String itemName = getLastFromIndex(cmdData, 1);
-				Material material = Material.getMaterial(itemName);
+				Material material = Parser.ParseMaterial(itemName);
 				
 				if(material == null){
 					sourcePlayer.sendMessage(ChatColor.RED + "Unknown item or material.");
