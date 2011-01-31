@@ -32,6 +32,7 @@ public class Kikkit extends JavaPlugin {
 	public static Logger MinecraftLog = null;				// Used to log stuff
 	public static boolean IsDebugging = false;
 	
+	public static int DEGRIEF_ITEM_ID = 280;
 	public static int MAX_IGNITE_ATTEMPTS = 5;
 	
 	public static final int DAY = 0;
@@ -53,6 +54,8 @@ public class Kikkit extends JavaPlugin {
 	
 	private KikkitPlayerListener playerListener;	// Used to handle server events
 	private KikkitBlockListener  blockListener;
+	private KikkitEntityListener entityListener;
+	private KikkitWorldListener  worldListener;
 	
 	private boolean isEnabled = true;		// Whether or not the plugin is enabled
 	
@@ -87,6 +90,8 @@ public class Kikkit extends JavaPlugin {
 		// Instantiate our listener object
 		playerListener = new KikkitPlayerListener(this);
 		blockListener = new KikkitBlockListener(this);
+		entityListener = new KikkitEntityListener(this);
+		worldListener = new KikkitWorldListener(this);
 		
 		// Get the logging device
 		if(MinecraftLog == null)
@@ -138,6 +143,13 @@ public class Kikkit extends JavaPlugin {
 		pm.registerEvent(Event.Type.BLOCK_IGNITE, blockListener, Priority.Normal, this);
 		pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.Normal, this);
 		pm.registerEvent(Event.Type.PLAYER_MOVE, new KikkitUpdater(this), Priority.Normal, this);
+		pm.registerEvent(Event.Type.ENTITY_DEATH, entityListener, Priority.Normal, this);
+		pm.registerEvent(Event.Type.ENTITY_DAMAGEDBY_BLOCK, entityListener, Priority.Normal, this);
+		pm.registerEvent(Event.Type.ENTITY_DAMAGEDBY_ENTITY, entityListener, Priority.Normal, this);
+		pm.registerEvent(Event.Type.ENTITY_DAMAGED, entityListener, Priority.Normal, this);
+		pm.registerEvent(Event.Type.ENTITY_COMBUST, entityListener, Priority.Normal, this);
+		pm.registerEvent(Event.Type.ENTITY_EXPLODE, entityListener, Priority.Normal, this);
+		pm.registerEvent(Event.Type.ITEM_SPAWN, worldListener, Priority.Normal, this);
 		
 		// Setup a timer so that the update method gets called (and call it)
 		//updateTimer = new Timer();

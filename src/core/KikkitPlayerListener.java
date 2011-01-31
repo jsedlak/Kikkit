@@ -17,7 +17,7 @@ public class KikkitPlayerListener extends PlayerListener {
 		plugin = kikkitPlugin;
 		
 		igniteKickCounter = plugin.getIgnitionKickCounter();
-		
+
 		listeners.add(new AdminCommandsListener(plugin));
 		listeners.add(new GeneralCommandsListener(plugin));
 		listeners.add(new ItemCommandsListener(plugin));
@@ -47,6 +47,7 @@ public class KikkitPlayerListener extends PlayerListener {
 			
 			plugin.broadcast(playerText + msg);
 		}
+	
 	}
 	
 	public void onPlayerItem(PlayerItemEvent event){

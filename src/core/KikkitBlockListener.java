@@ -14,13 +14,14 @@ public class KikkitBlockListener extends BlockListener {
 	
 	public KikkitBlockListener(Kikkit kikkitPlugin){
 		plugin = kikkitPlugin;
-		
+	
 		igniteKickCounter = plugin.getIgnitionKickCounter();
 	}
 	
 	@Override
     public void onBlockCanBuild(BlockCanBuildEvent event) {
-		//Kikkit.MinecraftLog.info("onBlockCanBuild(" + event.getMaterialId() + ")");
+		if(Kikkit.IsDebugging)
+			Kikkit.MinecraftLog.info("onBlockCanBuild(" + event.getMaterialId() + ")");
 		
 		//Player player = event.getPlayer();
 		//event.setBuildable(true);
@@ -47,8 +48,8 @@ public class KikkitBlockListener extends BlockListener {
 	public void onBlockPlace(BlockPlaceEvent event){
 		event.setCancelled(false);
 		
-		//Kikkit.MinecraftLog.info("onBlockCanPlace");
-		//Kikkit.MinecraftLog.info("onBlockPlace(block: " + event.getBlock().getTypeId() + ", placed: " + event.getBlockPlaced().getTypeId() + ")");
+		if(Kikkit.IsDebugging)
+			Kikkit.MinecraftLog.info("onBlockPlace(block: " + event.getBlock().getTypeId() + ", placed: " + event.getBlockPlaced().getTypeId() + ")");
 		
 		Player player = event.getPlayer();
 		
@@ -84,6 +85,12 @@ public class KikkitBlockListener extends BlockListener {
 					
 					plugin.broadcast(ChatColor.DARK_PURPLE + sourcePlayer.getName() + " has been kicked for trying to use lava.");
 				}
+			}
+		}
+		else if(event.getItemInHand().getTypeId() == Kikkit.DEGRIEF_ITEM_ID){
+			if(plugin.canUseCommand(sourcePlayer, "/degrief")){
+				// TODO: Verify we can do this
+				event.getBlock().setType(Material.AIR);
 			}
 		}
 	}
