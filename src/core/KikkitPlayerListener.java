@@ -143,6 +143,6 @@ public class KikkitPlayerListener extends PlayerListener {
     		if(result) break;
     	}
     	
-    	player.sendMessage(ChatColor.RED + "Unknown command.");		
+    	//player.sendMessage(ChatColor.RED + "Unknown command.");	
     }
 }
