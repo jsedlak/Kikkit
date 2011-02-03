@@ -46,7 +46,7 @@ public class KikkitBlockListener extends BlockListener {
 	
 	@Override
 	public void onBlockPlace(BlockPlaceEvent event){
-		event.setCancelled(false);
+		//event.setCancelled(false);
 		
 		if(Kikkit.IsDebugging)
 			Kikkit.MinecraftLog.info("onBlockPlace(block: " + event.getBlock().getTypeId() + ", placed: " + event.getBlockPlaced().getTypeId() + ")");
