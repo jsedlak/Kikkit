@@ -6,6 +6,8 @@ import java.util.logging.Logger;
 import java.util.Date;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -17,6 +19,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import core.economy.*;
+import core.listeners.*;
 import core.players.PlayerManager;
 
 /*
@@ -76,6 +79,8 @@ public class Kikkit extends JavaPlugin {
 	
 	private String messageOfTheDay = "";
 	
+	private CommandListenerCollection listeners = new CommandListenerCollection();
+	
 	Timer updateTimer;
 	
 	public Kikkit(
@@ -131,6 +136,16 @@ public class Kikkit extends JavaPlugin {
 		playerManager = new PlayerManager(this);
 		currentMarket = new Market(this);
 		
+		listeners.add(new AdminCommandsListener(this));
+		listeners.add(new GeneralCommandsListener(this));
+		listeners.add(new ItemCommandsListener(this));
+		listeners.add(new PersonalWarpCommandsListener(this));
+		listeners.add(new PublicWarpCommandsListener(this));
+		listeners.add(new TeleportCommandsListener(this));
+		listeners.add(new WhitelistCommandsListener(this));
+		listeners.add(new EconomyCommandsListener(this));
+		listeners.add(new ChatCommandsListener(this));
+		
 		loadConfiguration();
 		
 		// HOOK! Wasn't that a movie? Anyways, attach some event handlers (I'm a C#er, okay?)
@@ -173,6 +188,29 @@ public class Kikkit extends JavaPlugin {
 		} catch(Exception ex){
 			MinecraftLog.info(ex.getMessage() + "\n" + ex.getStackTrace());
 		}
+	}
+	
+	@Override
+	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args){
+		//String[] split = event.getMessage().split(" ");
+    	//Player player = event.getPlayer();
+    	
+		CommandWrapper commandWrapper = new CommandWrapper();
+		commandWrapper.Sender = sender;
+		commandWrapper.Command = command;
+		commandWrapper.CommandLabel = commandLabel;
+		commandWrapper.Arguments = args;
+		commandWrapper.IsCancelled = false;
+		
+    	// Loop through all the command listeners
+    	for(CommandListener listener : listeners){
+    		boolean result = listener.onCommand(commandWrapper);
+
+    		if(commandWrapper.IsCancelled || result) return true;
+    		if(result) break;
+    	}
+    	
+		return false;
 	}
 	
 	public boolean canUseCommand(Player player, String command){

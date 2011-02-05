@@ -11,7 +11,8 @@ public abstract class CommandListener {
 		kikkitPlugin = plugin;
 	}
 	
-	public abstract boolean onCommand(PlayerChatEvent event, String[] cmdData, Player sourcePlayer);
+	//public abstract boolean onCommand(PlayerChatEvent event, String[] cmdData, Player sourcePlayer);
+	public abstract boolean onCommand(CommandWrapper command);
 	
 	protected Kikkit getPlugin(){
 		return kikkitPlugin;
@@ -25,9 +26,10 @@ public abstract class CommandListener {
 		return kikkitPlugin.getServer();
 	}
 	
-	protected void setCommandHandled(PlayerChatEvent event, boolean wasCommandHandled){
+	protected void setCommandHandled(CommandWrapper command, boolean wasCommandHandled){
 		if(wasCommandHandled){
-			event.setCancelled(true);
+			//event.setCancelled(true);
+			command.IsCancelled = true;
 		}
 	}
 	
