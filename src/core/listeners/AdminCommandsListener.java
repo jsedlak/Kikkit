@@ -23,7 +23,6 @@ public class AdminCommandsListener extends CommandListener {
 		if(cmd.Command.getName().equalsIgnoreCase("/time") || cmd.Command.getName().equalsIgnoreCase("/day") || cmd.Command.getName().equalsIgnoreCase("/night"))
     	{
     		if(!canUseCommand(sourcePlayer, "/time")){
-    			// Error!
     			return true;
     		}
     		
@@ -35,20 +34,39 @@ public class AdminCommandsListener extends CommandListener {
     			setCommandHandled(cmd, true);
 				return true;
     		}*/
+    		
+    		if(cmd.Name.equalsIgnoreCase("/day")){
+    			Kikkit.getCurrentWorld().setTime(Kikkit.DAY);
     			
-    		try{
-				if(cmd.Command.getName().equalsIgnoreCase("/day") || (cmd.Arguments.length == 2 && cmd.Arguments[1].equalsIgnoreCase("day")))
-					getServer().getWorlds()[0].setTime(Kikkit.DAY);
-				else if(cmd.Command.getName().equalsIgnoreCase("/night") || (cmd.Arguments.length == 2 && cmd.Arguments[1].equalsIgnoreCase("night")))
-					getServer().getWorlds()[0].setTime(Kikkit.NIGHT);
-				else{
-					if(cmd.Arguments.length == 1) getServer().getWorlds()[0].setTime(Long.parseLong(cmd.Arguments[0]));
-				}
-				
-				setCommandHandled(cmd, true);
-				return true;
+    			setCommandHandled(cmd, true);
+    			return true;
     		}
-    		catch(Exception ex){}
+    		else if(cmd.Name.equalsIgnoreCase("/night")){
+    			Kikkit.getCurrentWorld().setTime(Kikkit.NIGHT);
+    			
+    			setCommandHandled(cmd, true);
+    			return true;
+    		}
+    	
+    		// If there are no arguments, we can't parse the data into a long
+    		if(cmd.Args.length == 0) return true;
+    		
+    		String timeData = cmd.Args[0];
+    		long time = Kikkit.DAY;
+    		
+    		try{
+    			time = Long.parseLong(timeData);
+
+    			Kikkit.getCurrentWorld().setTime(time);
+    		}
+    		catch(NumberFormatException nfe){
+    			Kikkit.MinecraftLog.info("There was a problem parsing the time command's data.");
+    			
+    			if(sourcePlayer != null) sourcePlayer.sendMessage(ChatColor.RED + "Couldn't parse the time.");
+    		}
+    			
+    		setCommandHandled(cmd, true);
+			return true;
     	}
     	else if(cmd.Command.getName().equalsIgnoreCase("/debug")){
     		if(!canUseCommand(sourcePlayer, "/debug")){
@@ -70,34 +88,34 @@ public class AdminCommandsListener extends CommandListener {
 				return true;
 			}
     		
-    		if(cmd.Arguments.length >= 1){
-	    		/*
-    			if(cmd.Arguments[1].equalsIgnoreCase("?")){
-    				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Kicks a player from the game.");
-    				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] /kick <player name> [reason]");
-    				setCommandHandled(cmd, true);
-    				return true;
-    			}
-    			*/
-    			
-	    		String reason = "";
-	    		if(cmd.Arguments.length > 1) {
-	    			for(int k = 1; k < cmd.Arguments.length; k++)
-	    				reason += cmd.Arguments[k] + " ";
-	    		}
-	    		
-	    		Player playerToKick = getServer().getPlayer(cmd.Arguments[0]);
-	    		
-	    		if(playerToKick != null){ 
-	    			playerToKick.kickPlayer(reason);
-	    		
-	    			getPlugin().broadcast(playerToKick.getName() + " has been kicked.");
-	    			
-	    			setCommandHandled(cmd, true);
-	    		}
-	    		
-	    		return true;
+    		/*
+			if(cmd.Arguments[1].equalsIgnoreCase("?")){
+				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Kicks a player from the game.");
+				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] /kick <player name> [reason]");
+				setCommandHandled(cmd, true);
+				return true;
+			}
+			*/
+    		
+    		Player playerToKick = null;
+    		String reason = "Please see the rules.";
+    		
+    		if(cmd.Args.length == 0) return true;
+    		
+    		if(cmd.Args.length >= 1) playerToKick = getServer().getPlayer(cmd.Args[0]);
+    		if(cmd.Args.length > 1) reason = getLastFromIndex(cmd.Args, 1);
+    		
+    		if(playerToKick == null){
+    			if(sourcePlayer != null) sourcePlayer.sendMessage(ChatColor.RED + "Can't find player " + cmd.Args[0]);
+    			return true;
     		}
+    		
+    		playerToKick.kickPlayer(reason);
+    		
+    		getPlugin().broadcast(ChatColor.RED + playerToKick.getName() + " has been kicked from the game.");
+    		
+    		setCommandHandled(cmd, true);
+    		return true;
     	}
     	else if(cmd.Command.getName().equalsIgnoreCase("/murder") || cmd.Command.getName().equalsIgnoreCase("/kill")){
     		if(!canUseCommand(sourcePlayer, "/murder")){
@@ -114,17 +132,12 @@ public class AdminCommandsListener extends CommandListener {
 				return true;
     		}*/
     		
-    		if(cmd.Arguments.length == 0){
-    			sourcePlayer.sendMessage(ChatColor.RED + "Unknown player.");
-    			
-    			setCommandHandled(cmd, true);
-    			return true;
-    		}
+    		Player target = null;
     		
-    		Player target = getServer().getPlayer(cmd.Arguments[0]);
+    		if(cmd.Args.length > 0) target = getServer().getPlayer(cmd.Args[0]);
     		
     		if(target == null){
-				sourcePlayer.sendMessage(ChatColor.RED + "Unknown player.");
+    			if(sourcePlayer != null) sourcePlayer.sendMessage(ChatColor.RED + "Unknown player.");
     			
     			setCommandHandled(cmd, true);
     			return true;
@@ -132,14 +145,13 @@ public class AdminCommandsListener extends CommandListener {
     		
     		target.setHealth(0);
     		
-    		sourcePlayer.sendMessage(ChatColor.RED + "You have killed " + target.getName());
+    		if(sourcePlayer != null) sourcePlayer.sendMessage(ChatColor.RED + "You have murdered " + target.getName());
     		
     		setCommandHandled(cmd, true);
-			return true;
+    		return true;
     	}
     	else if(cmd.Command.getName().equalsIgnoreCase("/clearinventory") || cmd.Command.getName().equalsIgnoreCase("/ci")){
     		if(!canUseCommand(sourcePlayer, "/clearinventory")){
-    			// Error!
     			return true;
     		}
     		
@@ -155,18 +167,25 @@ public class AdminCommandsListener extends CommandListener {
     		
     		Player target = sourcePlayer;
     		
-    		if(cmd.Arguments.length >= 1){
-    			Player p = getServer().getPlayer(cmd.Arguments[0]);
+    		if(cmd.Args.length > 0){
+    			// Special check
+    			if(!canUseCommand(sourcePlayer, "/citarget"))
+    				return true;
     			
-    			if(p != null) target = p;
+    			target = getServer().getPlayer(cmd.Args[0]);
+    		}
+    		
+    		if(target == null){
+    			if(sourcePlayer != null) sourcePlayer.sendMessage(ChatColor.RED + "Unknown player.");
+    			
+    			setCommandHandled(cmd, true);
+    			return true;
     		}
     		
     		target.getInventory().clear();
+    		target.sendMessage(ChatColor.RED + "Your inventory has been cleared.");
     		
-    		sourcePlayer.sendMessage(ChatColor.RED + "Cleared the inventory!");
-    		
-    		if(!target.getName().equalsIgnoreCase(sourcePlayer.getName())) 
-    			target.sendMessage(ChatColor.RED + sourcePlayer.getName() + " has cleared your inventory.");
+    		if(sourcePlayer != null && sourcePlayer != target) sourcePlayer.sendMessage(ChatColor.RED + "Cleared inventory.");
     		
     		setCommandHandled(cmd, true);
 			return true;

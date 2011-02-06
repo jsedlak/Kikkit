@@ -197,10 +197,13 @@ public class Kikkit extends JavaPlugin {
     	
 		CommandWrapper commandWrapper = new CommandWrapper();
 		commandWrapper.Sender = sender;
+		commandWrapper.Name = command.getName();
 		commandWrapper.Command = command;
-		commandWrapper.CommandLabel = commandLabel;
-		commandWrapper.Arguments = args;
+		commandWrapper.Label = commandLabel;
+		commandWrapper.Args = args;
 		commandWrapper.IsCancelled = false;
+		
+		if(args == null) commandWrapper.Args = new String[0];
 		
     	// Loop through all the command listeners
     	for(CommandListener listener : listeners){

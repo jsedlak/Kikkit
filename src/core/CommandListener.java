@@ -2,7 +2,6 @@ package core;
 
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerChatEvent;
 
 public abstract class CommandListener {
 	private Kikkit kikkitPlugin = null;
