@@ -216,6 +216,14 @@ public class Kikkit extends JavaPlugin {
 		return false;
 	}
 	
+	public boolean canUseCommand(CommandSender cmdSender, String command){
+		if(cmdSender.isOp()) return true;
+		
+		if(cmdSender instanceof Player) return canUseCommand((Player)cmdSender, command);
+		
+		return false;
+	}
+	
 	public boolean canUseCommand(Player player, String command){
 		return canUseCommand(player.getName(), command);
 	}
