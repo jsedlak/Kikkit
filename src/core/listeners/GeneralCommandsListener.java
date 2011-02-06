@@ -11,7 +11,6 @@ public class GeneralCommandsListener extends CommandListener {
 
 	public GeneralCommandsListener(Kikkit plugin) {
 		super(plugin);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

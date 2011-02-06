@@ -2,6 +2,7 @@ package core;
 
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
+import org.bukkit.command.CommandSender;
 
 public abstract class CommandListener {
 	private Kikkit kikkitPlugin = null;
@@ -15,6 +16,10 @@ public abstract class CommandListener {
 	
 	protected Kikkit getPlugin(){
 		return kikkitPlugin;
+	}
+	
+	protected boolean canUseCommand(CommandSender sender, String command){
+		return kikkitPlugin.canUseCommand(sender, command);
 	}
 	
 	protected boolean canUseCommand(Player player, String command){
