@@ -20,9 +20,9 @@ public class AdminCommandsListener extends CommandListener {
 		
 		if(cmd.Sender instanceof Player){ sourcePlayer = (Player)cmd.Sender; }
 			
-		if(cmd.Command.getName().equalsIgnoreCase("/time") || cmd.Command.getName().equalsIgnoreCase("/day") || cmd.Command.getName().equalsIgnoreCase("/night"))
+		if(cmd.Name.equalsIgnoreCase("/time") || cmd.Name.equalsIgnoreCase("/day") || cmd.Name.equalsIgnoreCase("/night"))
     	{
-    		if(!canUseCommand(sourcePlayer, "/time")){
+    		if(!canUseCommand(cmd.Sender, "/time")){
     			return true;
     		}
     		
@@ -68,8 +68,8 @@ public class AdminCommandsListener extends CommandListener {
     		setCommandHandled(cmd, true);
 			return true;
     	}
-    	else if(cmd.Command.getName().equalsIgnoreCase("/debug")){
-    		if(!canUseCommand(sourcePlayer, "/debug")){
+    	else if(cmd.Name.equalsIgnoreCase("/debug")){
+    		if(!canUseCommand(cmd.Sender, "/debug")){
     			// Error!
 				return true;
 			}
@@ -82,8 +82,8 @@ public class AdminCommandsListener extends CommandListener {
     		setCommandHandled(cmd, true);
 			return true;
     	}
-    	else if(cmd.Command.getName().equalsIgnoreCase("/kick")){
-    		if(!canUseCommand(sourcePlayer, "/kick")){
+    	else if(cmd.Name.equalsIgnoreCase("/kick")){
+    		if(!canUseCommand(cmd.Sender, "/kick")){
 				// Error
 				return true;
 			}
@@ -117,8 +117,8 @@ public class AdminCommandsListener extends CommandListener {
     		setCommandHandled(cmd, true);
     		return true;
     	}
-    	else if(cmd.Command.getName().equalsIgnoreCase("/murder") || cmd.Command.getName().equalsIgnoreCase("/kill")){
-    		if(!canUseCommand(sourcePlayer, "/murder")){
+    	else if(cmd.Name.equalsIgnoreCase("/murder") || cmd.Command.getName().equalsIgnoreCase("/kill")){
+    		if(!canUseCommand(cmd.Sender, "/murder")){
     			return true;
     		}
     		
@@ -150,8 +150,8 @@ public class AdminCommandsListener extends CommandListener {
     		setCommandHandled(cmd, true);
     		return true;
     	}
-    	else if(cmd.Command.getName().equalsIgnoreCase("/clearinventory") || cmd.Command.getName().equalsIgnoreCase("/ci")){
-    		if(!canUseCommand(sourcePlayer, "/clearinventory")){
+    	else if(cmd.Name.equalsIgnoreCase("/clearinventory") || cmd.Command.getName().equalsIgnoreCase("/ci")){
+    		if(!canUseCommand(cmd.Sender, "/clearinventory")){
     			return true;
     		}
     		
@@ -169,7 +169,7 @@ public class AdminCommandsListener extends CommandListener {
     		
     		if(cmd.Args.length > 0){
     			// Special check
-    			if(!canUseCommand(sourcePlayer, "/citarget"))
+    			if(!canUseCommand(cmd.Sender, "/citarget"))
     				return true;
     			
     			target = getServer().getPlayer(cmd.Args[0]);

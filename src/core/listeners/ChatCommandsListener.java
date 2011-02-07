@@ -20,7 +20,7 @@ public class ChatCommandsListener extends CommandListener {
 		if(cmd.Sender instanceof Player) sourcePlayer = (Player)cmd.Sender;
 		
 		if(cmd.Name.equalsIgnoreCase("/v")){
-			if(!canUseCommand(sourcePlayer, "/v")) return true;
+			if(!canUseCommand(cmd.Sender, "/v")) return true;
 			
 			String msg = this.getLastFromIndex(cmd.Args, 0);
 			
@@ -46,7 +46,7 @@ public class ChatCommandsListener extends CommandListener {
 			return true;
 		}
 		else if(cmd.Name.equalsIgnoreCase("/a")){
-			if(!canUseCommand(sourcePlayer, "/a")) return true;
+			if(!canUseCommand(cmd.Sender, "/a")) return true;
 			
 			String msg = this.getLastFromIndex(cmd.Args, 0);
 			

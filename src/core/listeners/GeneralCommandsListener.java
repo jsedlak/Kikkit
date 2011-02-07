@@ -20,7 +20,7 @@ public class GeneralCommandsListener extends CommandListener {
 		if(cmd.Sender instanceof Player) sourcePlayer = (Player)cmd.Sender;
 		
 		if(cmd.Name.equalsIgnoreCase("/playerlist") || cmd.Name.equalsIgnoreCase("/listplayers") || cmd.Name.equalsIgnoreCase("/pl")){
-			if(!canUseCommand(sourcePlayer, "/playerlist")) return true;
+			if(!canUseCommand(cmd.Sender, "/playerlist")) return true;
 			
 			Player[] players = getServer().getOnlinePlayers();
 			
@@ -40,7 +40,7 @@ public class GeneralCommandsListener extends CommandListener {
 			return true;
 		}
 		else if(cmd.Name.equalsIgnoreCase("/msg") || cmd.Name.equalsIgnoreCase("/m")){
-			if(!canUseCommand(sourcePlayer, "/msg")) return true;
+			if(!canUseCommand(cmd.Sender, "/msg")) return true;
 			
 			if(cmd.Args.length < 2){
 				if(sourcePlayer != null) sourcePlayer.sendMessage(ChatColor.RED + "Invalid syntax.");
