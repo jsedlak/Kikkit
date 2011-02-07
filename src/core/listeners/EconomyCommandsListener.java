@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import core.CommandWrapper;
 import core.Kikkit;
 import core.Parser;
 import core.economy.*;
@@ -22,18 +23,17 @@ public class EconomyCommandsListener extends CommandListener {
 	}
 
 	@Override
-	public boolean onCommand(PlayerChatEvent event, String[] cmdData, Player sourcePlayer) {
-		if(cmdData[0].equalsIgnoreCase("/balance")){
-			if(!canUseCommand(sourcePlayer, "/balance")){
-				// Security error!
-				return true;
-			}
+	public boolean onCommand(CommandWrapper cmd) {
+		Player sourcePlayer = null;
+		if(cmd.Sender instanceof Player) sourcePlayer = (Player)cmd.Sender;
+		
+		if(cmd.Name.equalsIgnoreCase("/balance")){
+			if(!canUseCommand(cmd.Sender, "/balance")) return true;
 			
-			if(cmdData.length >= 2 && cmdData[1].equalsIgnoreCase("?")){
-				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Checks your current balance.");
-				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] /balance");
+			if(sourcePlayer == null){
+				cmd.msg(ChatColor.RED + "You cannot use this command right now.");
 				
-				setCommandHandled(event, true);
+				setCommandHandled(cmd, true);
 				return true;
 			}
 			
@@ -42,9 +42,10 @@ public class EconomyCommandsListener extends CommandListener {
 			
 			sourcePlayer.sendMessage(ChatColor.GREEN + "Your balance is " + pd.getCredits() + " " + getMarket().getCurrencyName() + ".");
 			
-			setCommandHandled(event, true);
+			setCommandHandled(cmd, true);
 			return true;
 		}
+
 		else if(cmdData[0].equalsIgnoreCase("/stock")){
 			if(!canUseCommand(sourcePlayer, "/stock")){
 				return true;
