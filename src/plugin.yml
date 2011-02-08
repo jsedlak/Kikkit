@@ -1,6 +1,6 @@
 name: Kikkit
 main: core.Kikkit
-version: 2.6.0.0
+version: 2.6.1.0
 website: http://jsedlak.org
 author: Kr1sc
 description: Various commands and anti-griefing.

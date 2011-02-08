@@ -205,8 +205,17 @@ public class Kikkit extends JavaPlugin {
 		
 		if(args == null) commandWrapper.Args = new String[0];
 		
-		MinecraftLog.info("onCommand: " + commandWrapper.Name);
-		MinecraftLog.info("    Args: " + commandWrapper.Args.toString());
+		if(Kikkit.IsDebugging) {
+			MinecraftLog.info("onCommand: " + commandWrapper.Name);
+			
+			String argStr = "";
+			for(String a : commandWrapper.Args){
+				argStr += a + " ";
+			}
+			
+			MinecraftLog.info("    Args: " + argStr);
+		}
+		
 		
     	// Loop through all the command listeners
     	for(CommandListener listener : listeners){
