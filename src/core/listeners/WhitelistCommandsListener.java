@@ -20,8 +20,8 @@ public class WhitelistCommandsListener extends CommandListener {
 		Player sourcePlayer = null;
 		if(cmd.Sender instanceof Player) sourcePlayer = (Player)cmd.Sender;
 		
-		if(cmd.Name.equalsIgnoreCase("/fire")){
-			if(!canUseCommand(cmd.Sender, "/fire")) return true;
+		if(cmd.Name.equalsIgnoreCase("fire")){
+			if(!canUseCommand(cmd.Sender, "fire")) return true;
 			
 			Whitelist fireList = getPlugin().getFireWhitelist();
 
@@ -52,8 +52,8 @@ public class WhitelistCommandsListener extends CommandListener {
 			
 			return true;
 		}
-		else if(cmd.Name.equalsIgnoreCase("/tempwl") || cmd.Name.equalsIgnoreCase("/wl")){
-			if(!canUseCommand(cmd.Sender, "/tempwl")) return true;
+		else if(cmd.Name.equalsIgnoreCase("tempwl") || cmd.Name.equalsIgnoreCase("wl")){
+			if(!canUseCommand(cmd.Sender, "tempwl")) return true;
 			
 			TemporaryWhitelist tempList = getPlugin().getTemporaryWhitelist();
 			

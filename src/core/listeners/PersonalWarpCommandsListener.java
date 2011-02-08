@@ -20,13 +20,13 @@ public class PersonalWarpCommandsListener extends CommandListener {
 		
 		if(cmd.Sender instanceof Player) sourcePlayer = (Player)cmd.Sender;
 		
-		if(cmd.Name.equalsIgnoreCase("/setsecret")){
+		if(cmd.Name.equalsIgnoreCase("setsecret")){
 			if(sourcePlayer == null){
 				Kikkit.MinecraftLog.info("Nonplayer tried to run a player specific command: " + cmd.Name + ".");
 				return true;
 			}
 			
-			if(!canUseCommand(cmd.Sender, "/setsecret")) return true;
+			if(!canUseCommand(cmd.Sender, "setsecret")) return true;
 			
 			WarpList list = getPlugin().getSecretWarpList();
 			
@@ -37,13 +37,13 @@ public class PersonalWarpCommandsListener extends CommandListener {
 			setCommandHandled(cmd, true);
 			return true;
 		}
-		else if(cmd.Name.equalsIgnoreCase("/secret")){
+		else if(cmd.Name.equalsIgnoreCase("secret")){
 			if(sourcePlayer == null){
 				Kikkit.MinecraftLog.info("Nonplayer tried to run a player specific command: " + cmd.Name + ".");
 				return true;
 			}
 			
-			if(!canUseCommand(cmd.Sender, "/secret")) return true;
+			if(!canUseCommand(cmd.Sender, "secret")) return true;
 			
 			WarpList list = getPlugin().getSecretWarpList();
 			
@@ -61,13 +61,13 @@ public class PersonalWarpCommandsListener extends CommandListener {
 			setCommandHandled(cmd, true);
 			return true;
 		}
-		else if(cmd.Name.equalsIgnoreCase("/sethome")){
+		else if(cmd.Name.equalsIgnoreCase("sethome")){
 			if(sourcePlayer == null){
 				Kikkit.MinecraftLog.info("Nonplayer tried to run a player specific command: " + cmd.Name + ".");
 				return true;
 			}
 			
-			if(!canUseCommand(cmd.Sender, "/sethome")) return true;
+			if(!canUseCommand(cmd.Sender, "sethome")) return true;
 			
 			WarpList list = getPlugin().getHomeWarpList();
 			
@@ -78,13 +78,13 @@ public class PersonalWarpCommandsListener extends CommandListener {
 			setCommandHandled(cmd, true);
 			return true;
 		}
-		else if(cmd.Name.equalsIgnoreCase("/home")){
+		else if(cmd.Name.equalsIgnoreCase("home")){
 			if(sourcePlayer == null){
 				Kikkit.MinecraftLog.info("Nonplayer tried to run a player specific command: " + cmd.Name + ".");
 				return true;
 			}
 			
-			if(!canUseCommand(cmd.Sender, "/home")) return true;
+			if(!canUseCommand(cmd.Sender, "home")) return true;
 			
 			WarpList list = getPlugin().getHomeWarpList();
 			

@@ -19,8 +19,8 @@ public class PublicWarpCommandsListener extends CommandListener {
 		Player sourcePlayer = null;
 		if(cmd.Sender instanceof Player){ sourcePlayer = (Player)cmd.Sender; }
 		
-		if(cmd.Name.equalsIgnoreCase("/setspawn")){
-			if(!canUseCommand(cmd.Sender, "/setspawn")) return true;
+		if(cmd.Name.equalsIgnoreCase("setspawn")){
+			if(!canUseCommand(cmd.Sender, "setspawn")) return true;
 			
 			WarpList list = getPlugin().getServerModWarps();
 			
@@ -31,8 +31,8 @@ public class PublicWarpCommandsListener extends CommandListener {
 			setCommandHandled(cmd, true);
 			return true;
 		}
-		else if(cmd.Name.equalsIgnoreCase("/spawn")){
-			if(!canUseCommand(cmd.Sender, "/spawn")) return true;
+		else if(cmd.Name.equalsIgnoreCase("spawn")){
+			if(!canUseCommand(cmd.Sender, "spawn")) return true;
 			
 			if(sourcePlayer == null){
 				cmd.msg(ChatColor.RED + "Can't warp to spawn. Please use /warpto instead.");
@@ -57,8 +57,8 @@ public class PublicWarpCommandsListener extends CommandListener {
 			setCommandHandled(cmd, true);
 			return true;
 		}
-		else if(cmd.Name.equalsIgnoreCase("/setwarp") || cmd.Name.equalsIgnoreCase("/swarp")){
-			if(!canUseCommand(cmd.Sender, "/setwarp")) return true;
+		else if(cmd.Name.equalsIgnoreCase("setwarp") || cmd.Name.equalsIgnoreCase("swarp")){
+			if(!canUseCommand(cmd.Sender, "setwarp")) return true;
 			
 			WarpList list = getPlugin().getServerModWarps();
 			
@@ -69,8 +69,8 @@ public class PublicWarpCommandsListener extends CommandListener {
 			setCommandHandled(cmd, true);
 			return true;
 		}
-		else if(cmd.Name.equalsIgnoreCase("/removewarp") || cmd.Name.equalsIgnoreCase("/rmwarp")){
-			if(!canUseCommand(cmd.Sender, "/setwarp")) return true;
+		else if(cmd.Name.equalsIgnoreCase("removewarp") || cmd.Name.equalsIgnoreCase("rmwarp")){
+			if(!canUseCommand(cmd.Sender, "setwarp")) return true;
 			
 			WarpList list = getPlugin().getServerModWarps();
 			
@@ -80,8 +80,8 @@ public class PublicWarpCommandsListener extends CommandListener {
 			setCommandHandled(cmd, true);
 			return true;
 		}
-		else if(cmd.Name.equalsIgnoreCase("/warp")){
-			if(!canUseCommand(cmd.Sender, "/warp")) return true;
+		else if(cmd.Name.equalsIgnoreCase("warp")){
+			if(!canUseCommand(cmd.Sender, "warp")) return true;
 			
 			if(sourcePlayer == null) {
 				cmd.msg(ChatColor.RED + "Cannot warp self, please use /warpto instead.");
@@ -113,8 +113,8 @@ public class PublicWarpCommandsListener extends CommandListener {
 			setCommandHandled(cmd, true);
 			return true;
 		}
-		else if(cmd.Name.equalsIgnoreCase("/warplist") || cmd.Name.equalsIgnoreCase("/listwarps")){
-			if(!canUseCommand(cmd.Sender, "/warplist")) return true;
+		else if(cmd.Name.equalsIgnoreCase("warplist") || cmd.Name.equalsIgnoreCase("listwarps")){
+			if(!canUseCommand(cmd.Sender, "warplist")) return true;
 			
 			WarpList list = getPlugin().getServerModWarps();
 			WarpList.WarpPoint[] array = list.toArray();

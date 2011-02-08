@@ -19,8 +19,8 @@ public class TeleportCommandsListener extends CommandListener {
 		Player sourcePlayer = null;
 		if(cmd.Sender instanceof Player) sourcePlayer = (Player)cmd.Sender;
 		
-		if(cmd.Name.equalsIgnoreCase("/warpto")){
-			if(!canUseCommand(cmd.Sender, "/warpto")) return true;
+		if(cmd.Name.equalsIgnoreCase("warpto")){
+			if(!canUseCommand(cmd.Sender, "warpto")) return true;
 			
 			if(cmd.Args.length < 2 && sourcePlayer == null){
 				cmd.msg(ChatColor.RED + "Cannot warp, please specify a player.");
@@ -47,8 +47,8 @@ public class TeleportCommandsListener extends CommandListener {
 			setCommandHandled(cmd, true);
 			return true;
 		}
-		else if(cmd.Name.equalsIgnoreCase("/tphere") || cmd.Name.equalsIgnoreCase("/tph")){
-			if(!canUseCommand(cmd.Sender, "/tphere")) return true;
+		else if(cmd.Name.equalsIgnoreCase("tphere") || cmd.Name.equalsIgnoreCase("tph")){
+			if(!canUseCommand(cmd.Sender, "tphere")) return true;
 			
 			if(sourcePlayer == null){
 				cmd.msg(ChatColor.RED + "Can't teleport here, use /tp instead.");
@@ -79,7 +79,7 @@ public class TeleportCommandsListener extends CommandListener {
 				sourcePlayer.sendMessage(ChatColor.RED + "Unknown player.");
 			}
 		}
-		else if(cmd.Name.equalsIgnoreCase("/tp")){
+		else if(cmd.Name.equalsIgnoreCase("tp")){
 			if(cmd.Args.length < 1){
 				cmd.msg("Incorrect usage, please check your syntax.");
 				

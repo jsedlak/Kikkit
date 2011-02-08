@@ -21,8 +21,8 @@ public class ItemCommandsListener extends CommandListener {
 		Player sourcePlayer = null;
 		if(cmd.Sender instanceof Player) sourcePlayer = (Player)cmd.Sender;
 		
-		if(cmd.Name.equalsIgnoreCase("/item") || cmd.Name.equalsIgnoreCase("/i")){
-			if(!canUseCommand(cmd.Sender, "/item")) return true;
+		if(cmd.Name.equalsIgnoreCase("item") || cmd.Name.equalsIgnoreCase("i")){
+			if(!canUseCommand(cmd.Sender, "item")) return true;
 			
 			Player playerToGiveTo = sourcePlayer;
 			int amount = 1;
@@ -84,8 +84,8 @@ public class ItemCommandsListener extends CommandListener {
 			setCommandHandled(cmd, true);
 			return true;
 		}
-		else if(cmd.Name.equalsIgnoreCase("/getid")){
-			if(!canUseCommand(cmd.Sender, "/getid")) return true;
+		else if(cmd.Name.equalsIgnoreCase("getid")){
+			if(!canUseCommand(cmd.Sender, "getid")) return true;
 			
 			String itemName = getLastFromIndex(cmd.Args, 0);
 

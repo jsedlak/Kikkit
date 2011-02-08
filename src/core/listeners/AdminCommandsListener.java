@@ -20,9 +20,9 @@ public class AdminCommandsListener extends CommandListener {
 		
 		if(cmd.Sender instanceof Player){ sourcePlayer = (Player)cmd.Sender; }
 			
-		if(cmd.Name.equalsIgnoreCase("/time") || cmd.Name.equalsIgnoreCase("/day") || cmd.Name.equalsIgnoreCase("/night"))
+		if(cmd.Name.equalsIgnoreCase("time") || cmd.Name.equalsIgnoreCase("day") || cmd.Name.equalsIgnoreCase("night"))
     	{
-    		if(!canUseCommand(cmd.Sender, "/time")){
+    		if(!canUseCommand(cmd.Sender, "time")){
     			return true;
     		}
     		
@@ -35,13 +35,13 @@ public class AdminCommandsListener extends CommandListener {
 				return true;
     		}*/
     		
-    		if(cmd.Name.equalsIgnoreCase("/day")){
+    		if(cmd.Name.equalsIgnoreCase("day") || (cmd.Args.length > 0 && cmd.Args[0].equalsIgnoreCase("day"))){
     			Kikkit.getCurrentWorld().setTime(Kikkit.DAY);
     			
     			setCommandHandled(cmd, true);
     			return true;
     		}
-    		else if(cmd.Name.equalsIgnoreCase("/night")){
+    		else if(cmd.Name.equalsIgnoreCase("night") || (cmd.Args.length > 0 && cmd.Args[0].equalsIgnoreCase("night"))){
     			Kikkit.getCurrentWorld().setTime(Kikkit.NIGHT);
     			
     			setCommandHandled(cmd, true);
@@ -68,22 +68,19 @@ public class AdminCommandsListener extends CommandListener {
     		setCommandHandled(cmd, true);
 			return true;
     	}
-    	else if(cmd.Name.equalsIgnoreCase("/debug")){
-    		if(!canUseCommand(cmd.Sender, "/debug")){
-    			// Error!
-				return true;
-			}
+    	else if(cmd.Name.equalsIgnoreCase("debug")){
+    		if(!canUseCommand(cmd.Sender, "debug")) return true;
     		
     		Kikkit.IsDebugging = !Kikkit.IsDebugging;
     		
-    		if(Kikkit.IsDebugging) getPlugin().broadcast("Debug set to true.");
-    		else getPlugin().broadcast("Debug set to false.");
+    		if(Kikkit.IsDebugging) cmd.msg("Debug set to true.");
+    		else cmd.msg("Debug set to false.");
     		
     		setCommandHandled(cmd, true);
 			return true;
     	}
-    	else if(cmd.Name.equalsIgnoreCase("/kick")){
-    		if(!canUseCommand(cmd.Sender, "/kick")){
+    	else if(cmd.Name.equalsIgnoreCase("kick")){
+    		if(!canUseCommand(cmd.Sender, "kick")){
 				// Error
 				return true;
 			}
@@ -117,8 +114,8 @@ public class AdminCommandsListener extends CommandListener {
     		setCommandHandled(cmd, true);
     		return true;
     	}
-    	else if(cmd.Name.equalsIgnoreCase("/murder") || cmd.Command.getName().equalsIgnoreCase("/kill")){
-    		if(!canUseCommand(cmd.Sender, "/murder")){
+    	else if(cmd.Name.equalsIgnoreCase("murder") || cmd.Command.getName().equalsIgnoreCase("/kill")){
+    		if(!canUseCommand(cmd.Sender, "murder")){
     			return true;
     		}
     		
@@ -150,8 +147,8 @@ public class AdminCommandsListener extends CommandListener {
     		setCommandHandled(cmd, true);
     		return true;
     	}
-    	else if(cmd.Name.equalsIgnoreCase("/clearinventory") || cmd.Command.getName().equalsIgnoreCase("/ci")){
-    		if(!canUseCommand(cmd.Sender, "/clearinventory")){
+    	else if(cmd.Name.equalsIgnoreCase("clearinventory") || cmd.Command.getName().equalsIgnoreCase("/ci")){
+    		if(!canUseCommand(cmd.Sender, "clearinventory")){
     			return true;
     		}
     		
@@ -169,7 +166,7 @@ public class AdminCommandsListener extends CommandListener {
     		
     		if(cmd.Args.length > 0){
     			// Special check
-    			if(!canUseCommand(cmd.Sender, "/citarget"))
+    			if(!canUseCommand(cmd.Sender, "citarget"))
     				return true;
     			
     			target = getServer().getPlayer(cmd.Args[0]);
