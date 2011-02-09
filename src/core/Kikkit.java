@@ -6,6 +6,8 @@ import java.util.logging.Logger;
 import java.util.Date;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -17,6 +19,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import core.economy.*;
+import core.listeners.*;
 import core.players.PlayerManager;
 
 /*
@@ -32,6 +35,7 @@ public class Kikkit extends JavaPlugin {
 	public static Logger MinecraftLog = null;				// Used to log stuff
 	public static boolean IsDebugging = false;
 	
+	public static int DEGRIEF_ITEM_ID = 280;
 	public static int MAX_IGNITE_ATTEMPTS = 5;
 	
 	public static final int DAY = 0;
@@ -46,13 +50,16 @@ public class Kikkit extends JavaPlugin {
 	}
 	
 	public static World getCurrentWorld(){
-		return Current.getServer().getWorlds()[0];
+		return Current.getServer().getWorlds().get(0);
 	}
 	
 	private KickCounter igniteKickCounter = new KickCounter();
 	
 	private KikkitPlayerListener playerListener;	// Used to handle server events
 	private KikkitBlockListener  blockListener;
+	private KikkitEntityListener entityListener;
+	@SuppressWarnings("unused")
+	private KikkitWorldListener  worldListener;
 	
 	private boolean isEnabled = true;		// Whether or not the plugin is enabled
 	
@@ -72,6 +79,8 @@ public class Kikkit extends JavaPlugin {
 	
 	private String messageOfTheDay = "";
 	
+	private CommandListenerCollection listeners = new CommandListenerCollection();
+	
 	Timer updateTimer;
 	
 	public Kikkit(
@@ -87,6 +96,8 @@ public class Kikkit extends JavaPlugin {
 		// Instantiate our listener object
 		playerListener = new KikkitPlayerListener(this);
 		blockListener = new KikkitBlockListener(this);
+		entityListener = new KikkitEntityListener(this);
+		worldListener = new KikkitWorldListener(this);
 		
 		// Get the logging device
 		if(MinecraftLog == null)
@@ -125,6 +136,16 @@ public class Kikkit extends JavaPlugin {
 		playerManager = new PlayerManager(this);
 		currentMarket = new Market(this);
 		
+		listeners.add(new AdminCommandsListener(this));
+		listeners.add(new GeneralCommandsListener(this));
+		listeners.add(new ItemCommandsListener(this));
+		listeners.add(new PersonalWarpCommandsListener(this));
+		listeners.add(new PublicWarpCommandsListener(this));
+		listeners.add(new TeleportCommandsListener(this));
+		listeners.add(new WhitelistCommandsListener(this));
+		listeners.add(new EconomyCommandsListener(this));
+		listeners.add(new ChatCommandsListener(this));
+		
 		loadConfiguration();
 		
 		// HOOK! Wasn't that a movie? Anyways, attach some event handlers (I'm a C#er, okay?)
@@ -138,6 +159,13 @@ public class Kikkit extends JavaPlugin {
 		pm.registerEvent(Event.Type.BLOCK_IGNITE, blockListener, Priority.Normal, this);
 		pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.Normal, this);
 		pm.registerEvent(Event.Type.PLAYER_MOVE, new KikkitUpdater(this), Priority.Normal, this);
+		pm.registerEvent(Event.Type.ENTITY_DEATH, entityListener, Priority.Normal, this);
+		pm.registerEvent(Event.Type.ENTITY_DAMAGEDBY_BLOCK, entityListener, Priority.Normal, this);
+		pm.registerEvent(Event.Type.ENTITY_DAMAGEDBY_ENTITY, entityListener, Priority.Normal, this);
+		pm.registerEvent(Event.Type.ENTITY_DAMAGED, entityListener, Priority.Normal, this);
+		pm.registerEvent(Event.Type.ENTITY_COMBUST, entityListener, Priority.Normal, this);
+		pm.registerEvent(Event.Type.ENTITY_EXPLODE, entityListener, Priority.Normal, this);
+		//pm.registerEvent(Event.Type.ITEM_SPAWN, worldListener, Priority.Normal, this);
 		
 		// Setup a timer so that the update method gets called (and call it)
 		//updateTimer = new Timer();
@@ -160,6 +188,52 @@ public class Kikkit extends JavaPlugin {
 		} catch(Exception ex){
 			MinecraftLog.info(ex.getMessage() + "\n" + ex.getStackTrace());
 		}
+	}
+	
+	@Override
+	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args){
+		//String[] split = event.getMessage().split(" ");
+    	//Player player = event.getPlayer();
+    	
+		CommandWrapper commandWrapper = new CommandWrapper();
+		commandWrapper.Sender = sender;
+		commandWrapper.Name = command.getName();
+		commandWrapper.Command = command;
+		commandWrapper.Label = commandLabel;
+		commandWrapper.Args = args;
+		commandWrapper.IsCancelled = false;
+		
+		if(args == null) commandWrapper.Args = new String[0];
+		
+		if(Kikkit.IsDebugging) {
+			MinecraftLog.info("onCommand: " + commandWrapper.Name);
+			
+			String argStr = "";
+			for(String a : commandWrapper.Args){
+				argStr += a + " ";
+			}
+			
+			MinecraftLog.info("    Args: " + argStr);
+		}
+		
+		
+    	// Loop through all the command listeners
+    	for(CommandListener listener : listeners){
+    		boolean result = listener.onCommand(commandWrapper);
+
+    		if(commandWrapper.IsCancelled || result) return true;
+    		if(result) break;
+    	}
+    	
+		return false;
+	}
+	
+	public boolean canUseCommand(CommandSender cmdSender, String command){
+		if(cmdSender.isOp()) return true;
+		
+		if(cmdSender instanceof Player) return canUseCommand((Player)cmdSender, command);
+		
+		return false;
 	}
 	
 	public boolean canUseCommand(Player player, String command){

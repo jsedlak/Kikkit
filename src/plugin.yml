@@ -1,3 +1,134 @@
 name: Kikkit
 main: core.Kikkit
-version: 2.5.5.2
+version: 2.6.2.1
+website: http://jsedlak.org
+author: Kr1sc
+description: General and anti-griefing commands.
+commands:
+    ci:
+        description: Clears a players inventory
+    clearinventory:
+        description: Clears a players inventory
+        usage: |
+               /clearinventory [player]
+               /ci [player]
+    item:
+        description: Gives items to a player
+        usage: |
+               /item <item id> [amount] [player]
+    tp:
+        description: Teleports a player
+        usage: /tp <destination> [source]
+    tph:
+        description: Teleports a player to your location.
+    tphere:
+        description: Teleports a player to your location.
+        usage: /tphere <player>
+    warp:
+        description: Warps to a location
+        usage: /warp <warp point>
+    warpto:
+        description: Warps a player to a warp point.
+        usage: /warp <player> <warp point>
+    setwarp:
+        description: Creates or moves a warp point
+        usage: /setwarp <warp name>
+    removewarp:
+        description: Removes a warp point
+        usage: /removewarp <warp name>
+    warplist:
+        description: Gets a list of available warp points
+        usage: /warplist
+    pl:
+        description: Gets a list of players online
+        usage: /pl
+    listplayers:
+        description: Gets a list of players online
+        usage: /listplayers
+    playerlist:
+        description: Gets a list of players online
+        usage: /playerlist
+    day:
+        description: Sets the time to DAY
+    night:
+        description: Sets the time to NIGHT
+    time:
+        description: Sets the time of day.
+        usage: |
+               /time <day, night, (long)>
+               /day
+               /night
+    kick:
+        description: Kicks a player
+        usage: /kick <player> [message]
+    home:
+        description: Warps you to your home location
+        usage: /home
+    sethome:
+        description: Sets your home location.
+        usage: /sethome
+    secret:
+        description: Warps you to your secret location
+        usage: /secret
+    setsecret:
+        description: Sets your secret location.
+        usage: /setsecret 
+    buy:
+        description: Buys an item from the marketplace
+        usage: /buy <amount> <item name, item id>
+    sell:
+        description: Sells an item to the marketplace
+        usage: /sell <amount> <item name, item id>
+    getid:
+        description: Gets the Minecraft Id for an item
+        usage: /getid <item name>
+    gp:
+        description: Gets the price of an item
+    getprice:
+        description: Gets the price of an item
+        usage: |
+               /getprice <b, s> <item id, item name>
+               /gp <b, s> <item id, item name>
+    sp:
+        description: Sets the price of an item
+    setprice:
+        description: Sets the price of an item
+        usage: /setprice <b, s> <item id> <amount>
+    murder:
+        description: Murders a player!
+        usage: /murder <player>
+    stock:
+        description: Stocks the marketplace
+        usage: /stock <item id> [amount]
+    fire:
+        description: Manages the fire whitelist
+        usage: |
+               /fire - Overrides the list
+               /fire add <player>
+               /fire remove <player>
+               /fire check <player>
+    tempwl:
+        description: Manages the temporary whitelist
+        usage: |
+               /tempwl - Overrides the list
+               /tempwl add <player>
+               /tempwl remove <player>
+               /tempwl check <player>
+    a:
+        description: Chat with admins and mods
+        usage: /a <message>
+    v:
+        description: Chat with VIPs, admins and mods
+        usage: /v <message>
+    spawn:
+        description: Warps you to the spawn area.
+        usage: /spawn
+    balance:
+        description: Checks your balance.
+        usage: /balance
+    msg:
+        description: Sends a message to another player.
+        usage: /msg <player> <message>
+    debug:
+        description: Changes whether or not Kikkit should print Debug information.
+    

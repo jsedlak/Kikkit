@@ -6,27 +6,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
-import core.listeners.*;
-
 public class KikkitPlayerListener extends PlayerListener {
 	private Kikkit plugin;
 	private KickCounter igniteKickCounter;
-	private CommandListenerCollection listeners = new CommandListenerCollection();
 	
 	public KikkitPlayerListener(Kikkit kikkitPlugin){
 		plugin = kikkitPlugin;
 		
 		igniteKickCounter = plugin.getIgnitionKickCounter();
-		
-		listeners.add(new AdminCommandsListener(plugin));
-		listeners.add(new GeneralCommandsListener(plugin));
-		listeners.add(new ItemCommandsListener(plugin));
-		listeners.add(new PersonalWarpCommandsListener(plugin));
-		listeners.add(new PublicWarpCommandsListener(plugin));
-		listeners.add(new TeleportCommandsListener(plugin));
-		listeners.add(new WhitelistCommandsListener(plugin));
-		listeners.add(new EconomyCommandsListener(plugin));
-		listeners.add(new ChatCommandsListener(plugin));
 	}
 	
 	public void onPlayerChat(PlayerChatEvent event){
@@ -47,6 +34,7 @@ public class KikkitPlayerListener extends PlayerListener {
 			
 			plugin.broadcast(playerText + msg);
 		}
+
 	}
 	
 	public void onPlayerItem(PlayerItemEvent event){
@@ -131,17 +119,8 @@ public class KikkitPlayerListener extends PlayerListener {
     public void onPlayerCommand(PlayerChatEvent event) {
     	if(event.isCancelled()) return;
     	
-    	String[] split = event.getMessage().split(" ");
-    	Player player = event.getPlayer();
     	
-    	// Loop through all the command listeners
-    	for(CommandListener listener : listeners){
-    		boolean result = listener.onCommand(event, split, player);
-    		
-    		if(event.isCancelled()) return;
-    		if(result) break;
-    	}
     	
-    	player.sendMessage(ChatColor.RED + "Unknown command.");		
+    	//player.sendMessage(ChatColor.RED + "Unknown command.");	
     }
 }

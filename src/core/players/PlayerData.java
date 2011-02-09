@@ -9,7 +9,7 @@ import org.bukkit.ChatColor;
 import core.Kikkit;
 
 public class PlayerData {
-	private static final long OneDay = 86400000;
+	// private static final long OneDay = 86400000;
 	
 	private String name;
 	private String filename;
@@ -26,18 +26,31 @@ public class PlayerData {
 		load();
 	}
 	
+	@SuppressWarnings("deprecation")
+	private boolean sameDay(Date d1, Date d2){
+		return d1.getYear() == d2.getYear() && d1.getMonth() == d2.getMonth() && d1.getDate() == d2.getDate();
+	}
+	
+	@SuppressWarnings("deprecation")
 	public void loggedOn(){
 		loggedOnTimeStamp = new Date();
 		
-		long diff = loggedOnTimeStamp.getTime() - lastDayLoggedOn.getTime();
+		Date testDate = new Date();
+		testDate.setDate(testDate.getDate() - 1);
 		
-		if(diff >= OneDay && diff <= OneDay * 2) consecutiveDaysOn++;
-		else if(diff > OneDay * 2){
-			consecutiveDaysOn = 0;
+		// Verify that today - 1 day was the last day the user logged on
+		boolean consecutiveCheck = sameDay(testDate, lastDayLoggedOn);
+		
+		// If it was yesterday, add to their days. 
+		if(consecutiveCheck) consecutiveDaysOn++;
+		else{
+			// If it wasn't today (it can't be in the future) then reset the counter
+			if(!sameDay(lastDayLoggedOn, loggedOnTimeStamp))
+				consecutiveDaysOn = 0;
 		}
 		
 		if(consecutiveDaysOn > 0 && (consecutiveDaysOn % 10) == 0){
-			int amount = consecutiveDaysOn * 10;
+			int amount = consecutiveDaysOn * consecutiveDaysOn * consecutiveDaysOn;
 			credits += amount;
 			Kikkit.Current.getServer().getPlayer(name).sendMessage(ChatColor.GREEN + "You've earned " + amount + " " + Kikkit.Current.getMarket().getCurrencyName() + " for being on so much!");
 		}

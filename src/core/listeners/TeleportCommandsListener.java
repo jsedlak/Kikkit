@@ -2,9 +2,9 @@ package core.listeners;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerChatEvent;
 
 import core.CommandListener;
+import core.CommandWrapper;
 import core.Kikkit;
 import core.WarpList;
 
@@ -12,124 +12,103 @@ public class TeleportCommandsListener extends CommandListener {
 
 	public TeleportCommandsListener(Kikkit plugin) {
 		super(plugin);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
-	public boolean onCommand(PlayerChatEvent event, String[] cmdData, Player sourcePlayer) {
-		// Command: warpto [player name] [warp name]
-		if(cmdData[0].equalsIgnoreCase("/warpto")){
-			if(!canUseCommand(sourcePlayer, "/warpto")) {
-				// Error!
+	public boolean onCommand(CommandWrapper cmd) {
+		Player sourcePlayer = null;
+		if(cmd.Sender instanceof Player) sourcePlayer = (Player)cmd.Sender;
+		
+		if(cmd.Name.equalsIgnoreCase("warpto")){
+			if(!canUseCommand(cmd.Sender, "warpto")) return true;
+			
+			if(cmd.Args.length < 2 && sourcePlayer == null){
+				cmd.msg(ChatColor.RED + "Cannot warp, please specify a player.");
+				
+				setCommandHandled(cmd, true);
 				return true;
 			}
 			
-			if(cmdData.length >= 2 && cmdData[1].equalsIgnoreCase("?")){
-				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] /warpto <player name> <warp name>");
+			Player playerToWarp = sourcePlayer;
+			
+			if(cmd.Args.length >= 2) playerToWarp = getServer().getPlayer(cmd.Args[0]);
+			
+			WarpList wl = getPlugin().getServerModWarps();
+			WarpList.WarpPoint wp = wl.get(cmd.Args[cmd.Args.length - 1]);
+			
+			if(playerToWarp == null) cmd.msg(ChatColor.RED + "Unknown player.");
+			else {
+				playerToWarp.sendMessage(ChatColor.RED + "Pooooosh!");
+				cmd.msg(ChatColor.RED + "Player has been warped.");
 				
-				setCommandHandled(event, true);
+				playerToWarp.teleportTo(wp.getLocation());
+			}
+			
+			setCommandHandled(cmd, true);
+			return true;
+		}
+		else if(cmd.Name.equalsIgnoreCase("tphere") || cmd.Name.equalsIgnoreCase("tph")){
+			if(!canUseCommand(cmd.Sender, "tphere")) return true;
+			
+			if(sourcePlayer == null){
+				cmd.msg(ChatColor.RED + "Can't teleport here, use /tp instead.");
+				
+				setCommandHandled(cmd, true);
 				return true;
 			}
 			
-			if(cmdData.length == 3){
-				WarpList wl = getPlugin().getServerModWarps();
-				
-				WarpList.WarpPoint wp = wl.get(cmdData[2]);
-				
-				if(wp == null){
-					sourcePlayer.sendMessage(ChatColor.RED + "Can't find warp: " + cmdData[2]);
+			Player source = getServer().getPlayer(cmd.Args[0]);
+			Player destination = sourcePlayer;
+			
+			if(source != null && destination != null){
+				if(source.getName().equalsIgnoreCase(destination.getName())){
+					getPlugin().broadcast(ChatColor.RED + sourcePlayer.getName() + " tried to teleport their self to their self.");
 					
-					setCommandHandled(event, true);
+					setCommandHandled(cmd, true);
 					return true;
 				}
 				
-				Player target = getServer().getPlayer(cmdData[1]);
+				source.teleportTo(destination);
 				
-				if(target == null) sourcePlayer.sendMessage(ChatColor.RED + "Can't find player: " + cmdData[1]);
-				else {
-					target.sendMessage(ChatColor.RED + "Pooooosh!");
-					sourcePlayer.sendMessage(ChatColor.RED + "Player has been warped.");
-					
-					target.teleportTo(wp.getLocation());
-				}
+				source.sendMessage(ChatColor.RED + "Telepooooorsh!");
+				sourcePlayer.sendMessage(ChatColor.RED + "Teleported player.");
 				
-				setCommandHandled(event, true);
-				return true;
-			};
+				Kikkit.MinecraftLog.info(sourcePlayer.getName() + " made " + source.getName() + " teleport to " + destination.getName());
+			}
+			else if(source == null){
+				sourcePlayer.sendMessage(ChatColor.RED + "Unknown player.");
+			}
 		}
-		else if(cmdData[0].equalsIgnoreCase("/tphere") || cmdData[0].equalsIgnoreCase("/tph")){
-    		if(!canUseCommand(sourcePlayer, "/tphere")){
-    			// Error!
-    			return true;
-    		}
-    		
-    		if(cmdData.length >= 2 && cmdData[1].equalsIgnoreCase("?")){
-    			sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] Teleports a player to your location.");
-				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] <source player>");
+		else if(cmd.Name.equalsIgnoreCase("tp")){
+			if(cmd.Args.length < 1){
+				cmd.msg("Incorrect usage, please check your syntax.");
 				
-				setCommandHandled(event, true);
+				setCommandHandled(cmd, true);
 				return true;
 			}
-    		
-    		if(cmdData.length >= 2){
-    			Player source = getServer().getPlayer(cmdData[1]);
-				Player destination = sourcePlayer;
-    			
-    			if(source != null && destination != null){
-    				if(source.getName().equalsIgnoreCase(destination.getName())){
-    					getPlugin().broadcast(ChatColor.RED + sourcePlayer.getName() + " tried to teleport their self to their self.");
-    					
-    					setCommandHandled(event, true);
-    					return true;
-    				}
-    				
-    				source.teleportTo(destination);
-    				
-    				source.sendMessage(ChatColor.RED + "Telepooooorsh!");
-    				sourcePlayer.sendMessage(ChatColor.RED + "Teleported player.");
-    				
-    				Kikkit.MinecraftLog.info(sourcePlayer.getName() + " made " + source.getName() + " teleport to " + destination.getName());
-    			}
-    			else if(source == null){
-    				sourcePlayer.sendMessage(ChatColor.RED + "Unknown player.");
-    			}
-    			
-    			setCommandHandled(event, true);
-    			return true;
+			
+			Player destination = getServer().getPlayer(cmd.Args[0]);
+			
+			Player source = sourcePlayer;
+			if(cmd.Args.length >= 2) source = getServer().getPlayer(cmd.Args[1]);
+			
+			if(source != null && destination != null){
+				source.teleportTo(destination);
+				
+				source.sendMessage(ChatColor.RED + "Telepooooorsh!");
+				cmd.msg(ChatColor.RED + "Teleported player.");
+				
+				if(sourcePlayer != null)
+					Kikkit.MinecraftLog.info(sourcePlayer.getName() + " made " + source.getName() + " teleport to " + destination.getName());
 			}
-    	}
-		else if(cmdData[0].equalsIgnoreCase("/tp")){
-    		if(!canUseCommand(sourcePlayer, "/tp")){
-    			// Error!
-    			return true;
-    		}
-    		
-    		if(cmdData.length >= 2){
-    			if(cmdData[1].equalsIgnoreCase("?")){
-    				sourcePlayer.sendMessage(ChatColor.RED + "[USAGE] <destination player> [source player]");
-    			}
-    			else{
-	    			Player destination = getServer().getPlayer(cmdData[1]);
-	    			
-	    			Player source = sourcePlayer;
-	    			if(cmdData.length >= 3) source = getServer().getPlayer(cmdData[2]);
-	    			
-	    			
-	    			if(source != null && destination != null){
-	    				source.teleportTo(destination);
-	    				
-	    				source.sendMessage(ChatColor.RED + "Telepooooorsh!");
-	    				sourcePlayer.sendMessage(ChatColor.RED + "Teleported player.");
-	    				
-	    				Kikkit.MinecraftLog.info(sourcePlayer.getName() + " made " + source.getName() + " teleport to " + destination.getName());
-	    			}
-    				
-    			}
-    			
-    			setCommandHandled(event, true);
-    			return true;
-    		}
-    	}
+			else{
+				cmd.msg(ChatColor.RED + "Unknown player.");
+			}
+			
+			setCommandHandled(cmd, true);
+			return true;
+		}
+
 		
 		return false;
 	}

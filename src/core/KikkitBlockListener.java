@@ -14,41 +14,23 @@ public class KikkitBlockListener extends BlockListener {
 	
 	public KikkitBlockListener(Kikkit kikkitPlugin){
 		plugin = kikkitPlugin;
-		
+	
 		igniteKickCounter = plugin.getIgnitionKickCounter();
 	}
 	
 	@Override
-    public void onBlockCanBuild(BlockCanBuildEvent event) {
-		//Kikkit.MinecraftLog.info("onBlockCanBuild(" + event.getMaterialId() + ")");
-		
-		//Player player = event.getPlayer();
-		//event.setBuildable(true);
-		
-		if(event.getMaterialId() == Material.TNT.getId() || event.getBlock().getTypeId() == Material.TNT.getId()){
-			/*if(!plugin.canPlayerIgnite(player)){
-				plugin.broadcast(ChatColor.RED + player.getName() + " has tried placing TNT, but has been blocked!");
-				Kikkit.MinecraftLog.info(player.getName() + " has tried to use TNT.");
-				
-				if(igniteKickCounter.checkAndSet(player.getName()) >= Kikkit.MAX_IGNITE_ATTEMPTS){
-					player.kickPlayer("You have been kicked for attempting to grief.");
-					plugin.broadcast(ChatColor.DARK_PURPLE + player.getName() + " has been kicked for trying to use TNT.");
-				}
-				
-				event.setCancelled(true);
-			}*/
-			Kikkit.MinecraftLog.info("Someone has tried to use TNT.");
-			//plugin.broadcast(ChatColor.RED + "Someone has tried placing TNT, but has been blocked!");
-			//event.setBuildable(false);
-		}
+    public void onBlockCanBuild(BlockCanBuildEvent event) {	
+		if(Kikkit.IsDebugging)
+			Kikkit.MinecraftLog.info("onBlockCanBuild(" + event.getMaterialId() + ")");
     }
 	
 	@Override
 	public void onBlockPlace(BlockPlaceEvent event){
-		event.setCancelled(false);
+		if(event.isCancelled()) return;
+		//event.setCancelled(false);
 		
-		//Kikkit.MinecraftLog.info("onBlockCanPlace");
-		//Kikkit.MinecraftLog.info("onBlockPlace(block: " + event.getBlock().getTypeId() + ", placed: " + event.getBlockPlaced().getTypeId() + ")");
+		if(Kikkit.IsDebugging)
+			Kikkit.MinecraftLog.info("onBlockPlace(block: " + event.getBlock().getTypeId() + ", placed: " + event.getBlockPlaced().getTypeId() + ")");
 		
 		Player player = event.getPlayer();
 		
@@ -86,6 +68,11 @@ public class KikkitBlockListener extends BlockListener {
 				}
 			}
 		}
+		else if(event.getItemInHand().getTypeId() == Kikkit.DEGRIEF_ITEM_ID){
+			if(plugin.canUseCommand(sourcePlayer, "/degrief")){
+				event.getBlock().setType(Material.AIR);
+			}
+		}
 	}
 	
 	@Override
@@ -95,7 +82,7 @@ public class KikkitBlockListener extends BlockListener {
 		Block block = event.getBlock();
 		Player player = event.getPlayer();
 		
-		// This method gets called ever second, regardless of whether or not
+		// This method gets called every second, regardless of whether or not
 		// an ignition is occuring. So block it out when there is no actual
 		// ignite event.
 		if(block == null || player == null){
