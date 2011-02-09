@@ -1,10 +1,12 @@
 name: Kikkit
 main: core.Kikkit
-version: 2.6.1.0
+version: 2.6.2.0
 website: http://jsedlak.org
 author: Kr1sc
-description: Various commands and anti-griefing.
+description: General and anti-griefing commands.
 commands:
+    ci:
+        description: Clears a players inventory
     clearinventory:
         description: Clears a players inventory
         usage: |
@@ -17,6 +19,8 @@ commands:
     tp:
         description: Teleports a player
         usage: /tp <destination> [source]
+    tph:
+        description: Teleports a player to your location.
     tphere:
         description: Teleports a player to your location.
         usage: /tphere <player>
@@ -35,6 +39,12 @@ commands:
     warplist:
         description: Gets a list of available warp points
         usage: /warplist
+    pl:
+        description: Gets a list of players online
+        usage: /pl
+    listplayers:
+        description: Gets a list of players online
+        usage: /listplayers
     playerlist:
         description: Gets a list of players online
         usage: /playerlist
@@ -72,11 +82,15 @@ commands:
     getid:
         description: Gets the Minecraft Id for an item
         usage: /getid <item name>
+    gp:
+        description: Gets the price of an item
     getprice:
         description: Gets the price of an item
         usage: |
                /getprice <b, s> <item id, item name>
                /gp <b, s> <item id, item name>
+    sp:
+        description: Sets the price of an item
     setprice:
         description: Sets the price of an item
         usage: /setprice <b, s> <item id> <amount>

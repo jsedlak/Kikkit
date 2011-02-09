@@ -27,14 +27,14 @@ public class GeneralCommandsListener extends CommandListener {
 			String total = ChatColor.RED + "Players: " + ChatColor.GRAY;
 			
 			for(int i = 0; i < players.length; i++){
-				if(players[i] == cmd.Sender) continue;
+				//if(players[i] == cmd.Sender) continue;
 				
 				total += players[i].getName();
 				
 				if(i < players.length - 1) total += ", ";
 			}
 			
-			if(sourcePlayer != null) sourcePlayer.sendMessage(total);
+			if(sourcePlayer != null) cmd.msg(total);
 			
 			setCommandHandled(cmd, true);
 			return true;
