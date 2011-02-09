@@ -50,7 +50,7 @@ public class Kikkit extends JavaPlugin {
 	}
 	
 	public static World getCurrentWorld(){
-		return Current.getServer().getWorlds()[0];
+		return Current.getServer().getWorlds().get(0);
 	}
 	
 	private KickCounter igniteKickCounter = new KickCounter();
