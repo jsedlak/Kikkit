@@ -80,6 +80,7 @@ public class Kikkit extends JavaPlugin {
 	private String messageOfTheDay = "";
 	
 	private CommandListenerCollection listeners = new CommandListenerCollection();
+	private String[] enabledCommands = new String[] { "*" };
 	
 	Timer updateTimer;
 	
@@ -185,6 +186,10 @@ public class Kikkit extends JavaPlugin {
 			if(genConfig.hasKey("motd")){
 				messageOfTheDay = genConfig.getValue("motd");
 			}
+			
+			if(genConfig.hasKey("enabledCommands")){
+				enabledCommands = genConfig.getValue("enabledCommands").split(",");
+			}
 		} catch(Exception ex){
 			MinecraftLog.info(ex.getMessage() + "\n" + ex.getStackTrace());
 		}
@@ -192,12 +197,25 @@ public class Kikkit extends JavaPlugin {
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args){
-		//String[] split = event.getMessage().split(" ");
-    	//Player player = event.getPlayer();
+		// Get the command name
+		String cmdName = command.getName().toLowerCase();
+		
+		if(enabledCommands != null && enabledCommands.length > 0){
+			boolean isCmdEnabled = false;
+			for(int i = 0; i < enabledCommands.length; i++){
+				if(enabledCommands[i].equalsIgnoreCase("*") || enabledCommands[i].equalsIgnoreCase(cmdName)){
+					isCmdEnabled = true;
+					break;
+				}
+				
+				// If the command isn't enabled, just return
+				if(!isCmdEnabled) return false;
+			}
+		}
     	
 		CommandWrapper commandWrapper = new CommandWrapper();
 		commandWrapper.Sender = sender;
-		commandWrapper.Name = command.getName();
+		commandWrapper.Name = cmdName;
 		commandWrapper.Command = command;
 		commandWrapper.Label = commandLabel;
 		commandWrapper.Args = args;
